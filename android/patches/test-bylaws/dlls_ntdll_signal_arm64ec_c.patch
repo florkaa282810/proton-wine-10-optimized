@@ -1,5 +1,5 @@
 diff --git a/dlls/ntdll/signal_arm64ec.c b/dlls/ntdll/signal_arm64ec.c
-index 061c9a6..4d5e4d3 100644
+index 061c9a66680..10cc7c4793f 100644
 --- a/dlls/ntdll/signal_arm64ec.c
 +++ b/dlls/ntdll/signal_arm64ec.c
 @@ -36,6 +36,11 @@
@@ -92,6 +92,15 @@ index 061c9a6..4d5e4d3 100644
  }
  __ASM_GLOBAL_FUNC( "#KiUserApcDispatcher",
                     ".seh_context\n\t"
+@@ -1593,7 +1607,7 @@ void CDECL RtlRestoreContext( CONTEXT *context, EXCEPTION_RECORD *rec )
+     }
+ 
+     /* hack: remove no longer accessible TEB frames */
+-    while ((ULONG64)teb_frame < context->Rsp)
++    while (is_valid_frame( (ULONG_PTR)teb_frame ) && (ULONG64)teb_frame < context->Rsp)
+     {
+         TRACE( "removing TEB frame: %p\n", teb_frame );
+         teb_frame = __wine_pop_frame( teb_frame );
 @@ -1788,6 +1802,14 @@ BOOLEAN WINAPI RtlIsProcessorFeaturePresent( UINT feature )
      return emulated_processor_features[feature];
  }
@@ -118,7 +127,7 @@ index 061c9a6..4d5e4d3 100644
  
      if (!__os_arm64x_check_call)
      {
-@@ -2080,10 +2104,10 @@ void WINAPI LdrInitializeThunk( CONTEXT *arm_context, ULONG_PTR unk2, ULONG_PTR 
+@@ -2080,10 +2104,10 @@ void WINAPI LdrInitializeThunk( CONTEXT *arm_context, ULONG_PTR unk2, ULONG_PTR
          __os_arm64x_set_x64_information = LdrpSetX64Information;
      }
  
