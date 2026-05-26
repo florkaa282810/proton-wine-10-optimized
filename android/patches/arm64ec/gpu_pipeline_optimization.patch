@@ -1,8 +1,8 @@
---- a/dlls/d3dcompiler_43/d3dcompiler.c
-+++ b/dlls/d3dcompiler_43/d3dcompiler.c
-@@ -123,6 +123,30 @@
-     return D3D_OK;
- }
+--- a/dlls/d3dcompiler_43/compiler.c
++++ b/dlls/d3dcompiler_43/compiler.c
+@@ -23,6 +23,31 @@
+ #include "d3dcompiler_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(d3dcompiler);
  
 +/* Conceptual CPU->GPU Pipeline Optimizations for Adreno */
 +#ifdef __aarch64__
@@ -32,6 +32,6 @@
 +}
 +#endif
 +
- /* D3DCompile */
- HRESULT WINAPI D3DCompile(LPCVOID pSrcData, SIZE_T SrcDataSize, LPCSTR pFileName, CONST D3D_SHADER_MACRO *pDefines, ID3DInclude *pInclude, LPCSTR pEntrypoint, LPCSTR pTarget, UINT Flags1, UINT Flags2, ID3DBlob **ppCode, ID3DBlob **ppErrorMsgs)
+ static HRESULT hresult_from_vkd3d_result(int vkd3d_result)
  {
+     switch (vkd3d_result)
