@@ -216,6 +216,10 @@ do
       "arm64ec/dlls_ntdll_unix_loader_c.patch"
       "arm64ec/loader_wine_inf_in.patch"
       "test-bylaws/programs_services_services_c.patch"
+      # performance optimizations
+      "arm64ec/signal_arm64_optimization.patch"
+      "arm64ec/esync_optimization.patch"
+      "arm64ec/virtual_memory_optimization.patch"
       "test-bylaws/dlls_winecrt0_arm64ec_c.patch"
 
       # fix build
