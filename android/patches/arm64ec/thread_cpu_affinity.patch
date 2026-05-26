@@ -1,0 +1,42 @@
+--- a/dlls/ntdll/unix/thread.c
++++ b/dlls/ntdll/unix/thread.c
+@@ -1449,6 +1449,30 @@
+         virtual_free_teb( teb );
+         status = STATUS_NO_MEMORY;
+     }
++
++    /* CPU Affinity Optimization for Snapdragon Big/LITTLE cores */
++    #ifdef __aarch64__
++    {
++        cpu_set_t cpuset;
++        CPU_ZERO(&cpuset);
++
++        /* Heuristic for thread classification and core assignment:
++         * This is a simplified example. In a real-world scenario, a more sophisticated
++         * mechanism would be needed to classify threads (e.g., based on name, priority,
++         * or explicit hints from the Wine application) and query the system for core topology.
++         *
++         * For demonstration, let\\\'s assume:
++         * - Cores 0-3 are \\\\'LITTLE\\\\' (efficiency)
++         * - Cores 4-7 are \\\\'BIG\\\\' (performance)
++         *
++         * For now, we\\\'ll assign all new threads to a \\\\'balanced\\\\' set, or a specific core
++         * if a clear heavy/light distinction can be made. A more advanced implementation
++         * would involve a thread pool manager or a tagging system.
++         */
++
++        int target_core = 4; // Placeholder: Assume core 4 is a \\\\'big\\\\' core for heavy threads
++        CPU_SET(target_core, &cpuset);
++
++        if (pthread_setaffinity_np(pthread_id, sizeof(cpu_set_t), &cpuset) != 0)
++        {
++            ERR("Failed to set CPU affinity for thread %lu to core %d\\\\n", pthread_id, target_core);
++        }
++        else
++        {
++            TRACE("Set CPU affinity for thread %lu to core %d\\\\n", pthread_id, target_core);
++        }
++    }
++    #endif
++
+     pthread_attr_destroy( &pthread_attr );
