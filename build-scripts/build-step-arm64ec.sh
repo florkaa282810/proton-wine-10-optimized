@@ -220,6 +220,9 @@ do
       "arm64ec/signal_arm64_optimization.patch"
       "arm64ec/esync_optimization.patch"
       "arm64ec/virtual_memory_optimization.patch"
+      "arm64ec/thread_cpu_affinity.patch"
+      "arm64ec/virtual_memory_optimization_new.patch"
+      "arm64ec/gpu_pipeline_optimization.patch"
       "test-bylaws/dlls_winecrt0_arm64ec_c.patch"
 
       # fix build
