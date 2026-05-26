@@ -1,0 +1,16 @@
+--- a/server/esync.c
++++ b/server/esync.c
+@@ -390,7 +390,11 @@
+ #ifdef __i386__
+     __asm__ __volatile__( "rep;nop" : : : "memory" );
+ #else
+-    __asm__ __volatile__( "" : : : "memory" );
++    #ifdef __aarch64__
++        __builtin_arm_yield();
++    #else
++        __asm__ __volatile__( "" : : : "memory" );
++    #endif
+ #endif
+ }
+ 
+ /* Server-side event support. */
