@@ -1,0 +1,25 @@
+--- a/dlls/ntdll/unix/signal_arm64.c
++++ b/dlls/ntdll/unix/signal_arm64.c
+@@ -352,10 +352,10 @@
+ 
+     if (is_arm64ec() && !is_ec_code( frame->pc ))
+     {
+-        CONTEXT *user_context = (CONTEXT *)((frame->sp - sizeof(CONTEXT)) & ~15);
+-
+-        user_context->ContextFlags = CONTEXT_FULL;
+-        NtGetContextThread( GetCurrentThread(), user_context );
+-        frame->sp = (ULONG_PTR)user_context;
+-        frame->pc = (ULONG_PTR)pKiUserEmulationDispatcher;
++        /* If we are in ARM64EC mode and not in EC code, we need to ensure the context
++         * is properly set up for emulation. Instead of getting the context again,
++         * we can directly set the frame->sp and frame->pc if the context is already full.
++         * This assumes the incoming context is already valid for the emulation dispatcher.
++         */
++        if ((context->ContextFlags & CONTEXT_FULL) == CONTEXT_FULL)
++        {
++            frame->sp = (ULONG_PTR)context;
++            frame->pc = (ULONG_PTR)pKiUserEmulationDispatcher;
++        }
+     }
+     return status;
+ }
