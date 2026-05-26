@@ -1,0 +1,15 @@
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -1107,7 +1107,11 @@
+ static struct range_entry *free_ranges_lower_bound( void *addr )
+ {
+     struct range_entry *begin = free_ranges;
+-    struct range_entry *end = free_ranges_end;
++    /* Optimize for common case: new view is at the end of existing free ranges */
++    if (free_ranges_end > free_ranges && addr > (free_ranges_end - 1)->base)
++        return free_ranges_end;
++
++    struct range_entry *end = free_ranges_end;
+ 
+     while (begin < end)
+     {
