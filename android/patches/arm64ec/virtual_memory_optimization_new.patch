@@ -1,0 +1,66 @@
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -25,6 +25,10 @@
+ #include "config.h"
+ 
+ #include <assert.h>
++#ifdef __aarch64__
++#include <malloc.h>
++#endif
++
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <stdarg.h>
+@@ -342,6 +346,20 @@
+ #define PM_SOFT_DIRTY_PAGE (1ull << 57)
+ 
+ static struct file_view *view_block_start, *view_block_end, *next_free_view;
++
++#ifdef __aarch64__
++/* Custom aligned allocation for critical buffers */
++static inline void *aligned_alloc_neon(size_t alignment, size_t size)
++{
++    void *ptr;
++    if (posix_memalign(&ptr, alignment, size) != 0)
++        return NULL;
++    return ptr;
++}
++
++static inline void aligned_free_neon(void *ptr)
++{
++    free(ptr);
++}
++#else
++#define aligned_alloc_neon(alignment, size) malloc(size)
++#define aligned_free_neon(ptr) free(ptr)
++#endif
+ #ifdef _WIN64
+ static const size_t view_block_size = 0x200000;
+ #else
+@@ -1881,12 +1899,13 @@
+     }
+     if (view_block_start == view_block_end)
+     {
+-        void *ptr = anon_mmap_alloc( view_block_size, PROT_READ | PROT_WRITE );
+-        if (ptr == MAP_FAILED) return NULL;
++        void *ptr = aligned_alloc_neon(128, view_block_size); /* Align to 128 bytes for NEON */
++        if (!ptr) return NULL;
+         view_block_start = ptr;
+-        view_block_end = view_block_start + view_block_size / sizeof(*view_block_start);
++        view_block_end = (struct file_view *)((char *)view_block_start + view_block_size);
+     }
+     return view_block_start++;
+ }
+ 
+ 
+ /***********************************************************************
+  *           free_view
+  *
+  * Free memory for view structure. virtual_mutex must be held by caller.
+  */
+ static void free_view( struct file_view *view )
+ {
+     *(struct file_view **)view = next_free_view;
+     next_free_view = view;
++    /* No need to free aligned memory here, as it\'s part of a block */
+ }
