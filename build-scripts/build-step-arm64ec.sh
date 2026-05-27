@@ -220,6 +220,9 @@ do
       "test-bylaws/dlls_winecrt0_arm64ec_c.patch"
       "arm64ec/adreno_mali_gpu_boost.patch"
       "arm64ec/scheduler_gaming_boost.patch"
+      "arm64ec/aggressive_syscall_fastpath.patch"
+      "arm64ec/vulkan_tile_optimization.patch"
+      "arm64ec/ntdll_aggressive_memory.patch"
 
       # fix build
       "arm64ec/dlls_wdscore_wdscore_spec.patch"

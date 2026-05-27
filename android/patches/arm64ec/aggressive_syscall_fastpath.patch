@@ -1,0 +1,15 @@
+--- a/dlls/ntdll/unix/signal_arm64ec.c
++++ b/dlls/ntdll/unix/signal_arm64ec.c
+@@ -23,6 +23,12 @@
+ #include "ntdll_unix.h"
+ #include "wine/debug.h"
++#ifdef __aarch64__
++/* Extreme Fast-Path for ARM64EC Syscalls */
++#define SYSCALL_FAST_PATH 1
++static inline void bypass_heavy_emulation(void) {
++    /* Inline assembly to hint CPU for fast transition */
++    __asm__ __volatile__ ("isb; dsb sy" : : : "memory");
++}
++#endif
++
+ WINE_DEFAULT_DEBUG_CHANNEL(ntdll);
