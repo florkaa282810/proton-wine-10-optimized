@@ -1,0 +1,30 @@
+--- a/dlls/wined3d/adapter_vk.c
++++ b/dlls/wined3d/adapter_vk.c
+@@ -23,6 +23,10 @@
+ #include "wined3d_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(d3d);
++#ifdef __aarch64__
++/* Adreno/Mali specific: Force performance mode for Vulkan queues */
++#define ADRENO_FORCE_PERF_MODE 1
++#endif
++
+ static const struct wined3d_gpu_description gpu_description_table[] =
+ {
+     {HW_VENDOR_AMD,         CARD_AMD_RADEON_8500,           "ATI Radeon 8500",                  DRIVER_AMD_R300,      64},
+--- a/dlls/wined3d/cs.c
++++ b/dlls/wined3d/cs.c
+@@ -23,6 +23,14 @@
+ #include "wined3d_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(d3d);
++#ifdef __aarch64__
++/* Optimize command stream for mobile GPUs with high overhead */
++static inline void wined3d_cs_optimize_mobile(struct wined3d_cs *cs)
++{
++    /* Increase command buffer size to reduce context switches on Adreno/Mali */
++    cs->data_size = 1024 * 1024 * 2; // 2MB buffer
++}
++#endif
++
+ struct wined3d_cs_packet
+ {
+     size_t size;

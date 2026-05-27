@@ -1,0 +1,20 @@
+--- a/dlls/ntdll/unix/thread.c
++++ b/dlls/ntdll/unix/thread.c
+@@ -1449,6 +1449,15 @@
+     /* Priority boost for gaming threads on ARM big.LITTLE */
+     #ifdef __aarch64__
+     {
++        struct sched_param param;
++        param.sched_priority = 10; // Slightly higher priority for game threads
++        if (pthread_setschedparam(pthread_id, SCHED_BATCH, &param) == 0)
++        {
++            TRACE("Set SCHED_BATCH for thread %lu to improve throughput\n", pthread_id);
++        }
++        
++        /* Enhanced affinity: Prefer even cores (usually BIG cores on many Snapdragon) */
++        cpu_set_t cpuset;
++        CPU_ZERO(&cpuset);
++        for (int i = 4; i < 8; i++) CPU_SET(i, &cpuset);
++        pthread_setaffinity_np(pthread_id, sizeof(cpu_set_t), &cpuset);
++    }
++    #endif

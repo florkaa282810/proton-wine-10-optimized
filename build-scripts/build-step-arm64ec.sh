@@ -218,6 +218,8 @@ do
       "test-bylaws/programs_services_services_c.patch"
       # performance optimizations
       "test-bylaws/dlls_winecrt0_arm64ec_c.patch"
+      "arm64ec/adreno_mali_gpu_boost.patch"
+      "arm64ec/scheduler_gaming_boost.patch"
 
       # fix build
       "arm64ec/dlls_wdscore_wdscore_spec.patch"
