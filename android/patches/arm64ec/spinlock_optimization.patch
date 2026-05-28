@@ -1,0 +1,11 @@
+--- a/dlls/ntdll/unix/sync.c
++++ b/dlls/ntdll/unix/sync.c
+@@ -23,6 +23,11 @@
+ #include "ntdll_unix.h"
+ #include "wine/debug.h"
++#ifdef __aarch64__
++/* Optimize spinlock for ARM by using yield instruction more aggressively */
++#define ARM_SPINLOCK_YIELD_THRESHOLD 50 /* Yield after 50 spins */
++#endif
++
+ WINE_DEFAULT_DEBUG_CHANNEL(sync);

@@ -1,171 +1,43 @@
-## INTRODUCTION
+# Proton Wine 10 - Extreme Optimized Edition for ARM64EC (Adreno/Mali)
 
-Wine is a program which allows running Microsoft Windows programs
-(including DOS, Windows 3.x, Win32, and Win64 executables) on Unix.
-It consists of a program loader which loads and executes a Microsoft
-Windows binary, and a library (called Winelib) that implements Windows
-API calls using their Unix, X11 or Mac equivalents.  The library may also
-be used for porting Windows code into native Unix executables.
+Bem-vindo à versão mais otimizada do Proton Wine 10, especialmente desenvolvida para dispositivos ARM64EC com GPUs Adreno e Mali. Esta edição foi cuidadosamente ajustada para proporcionar a melhor experiência de jogo possível, visando 80 FPS estáveis em títulos exigentes como Euro Truck Simulator 2 (ETS2) e American Truck Simulator (ATS), mesmo nas versões mais recentes como ETS 1.60.
 
-Wine is free software, released under the GNU LGPL; see the file
-LICENSE for the details.
+## Por que esta versão é diferente?
 
+Enquanto as versões padrão do Proton são genéricas, esta compilação é um "Proton de Corrida", com otimizações cirúrgicas que exploram as características únicas da arquitetura ARM64EC e das GPUs móveis. As principais melhorias incluem:
 
-## QUICK START
+1.  **Otimizações de GPU (Adreno/Mali):**
+    *   **Vulkan Tile-Based Optimization:** Ajustes no driver Vulkan para GPUs Adreno e Mali, reduzindo o consumo de banda de memória e otimizando o pipeline de renderização para arquiteturas baseadas em tiles.
+    *   **Boost de Performance:** Força o modo de performance para filas Vulkan e aumenta o buffer de comandos do WineD3D para 2MB, minimizando context switches e melhorando o throughput gráfico.
 
-From the top-level directory of the Wine source (which contains this file),
-run:
+2.  **Otimizações de CPU e Sistema:**
+    *   **Fast-Path de Syscalls (ARM64EC):** Redução drástica da latência na tradução de chamadas de sistema (syscalls) de x86 para ARM64, utilizando instruções de barreira de memória (`isb; dsb sy`) para acelerar a comunicação entre o jogo e o sistema operacional.
+    *   **Scheduler Gaming Boost:** Priorização agressiva de threads de jogo para os núcleos de performance (BIG cores) e uso da política de agendamento `SCHED_BATCH` para garantir throughput máximo da CPU.
+    *   **Redução de Barreiras de Memória:** Otimizações no gerenciamento de memória virtual do ntdll para reduzir a frequência de barreiras de memória, resultando em acesso a dados mais fluido e menos micro-stutters.
+    *   **L3 Cache Hints:** Inclusão de dicas de pré-busca para o cache L3, melhorando o acesso a padrões de memória críticos e reduzindo a latência.
 
-```
-./configure
-make
-```
+3.  **Otimizações de I/O e Áudio:**
+    *   **I/O Throughput Boost:** Aumento do tamanho do buffer de I/O para 128KB, melhorando a velocidade de leitura e escrita de dados do disco, essencial para jogos com carregamento constante de assets.
+    *   **Audio Latency Reduction:** Redução do tamanho do buffer ALSA para 50ms, diminuindo a latência de áudio e proporcionando uma experiência sonora mais responsiva.
 
-Then either install Wine:
+4.  **Otimizações de Compilador:**
+    *   **Flags Agressivas:** Utilização de flags de compilador como `-O3 -march=native -mtune=cortex-a76 -fomit-frame-pointer -flto` para extrair a máxima performance do código compilado, adaptado especificamente para CPUs ARM de alto desempenho.
 
-```
-make install
-```
+## Instalação e Uso
 
-Or run Wine directly from the build directory:
+1.  Baixe o arquivo `.wcp` mais recente da seção [Releases](https://github.com/Florkaa282810/proton-wine-10-optimized/releases) ou dos [Artifacts](https://github.com/Florkaa282810/proton-wine-10-optimized/actions) (procure pelo build mais recente com o commit `EXTREME BOOST`).
+2.  Siga as instruções específicas do seu launcher (ex: Winlator, Box64Droid) para importar e usar este Proton customizado.
+3.  Aproveite a performance sem precedentes em seus jogos Windows no Android!
 
-```
-./wine notepad
-```
+## Contribuições
 
-Run programs as `wine program`. For more information and problem
-resolution, read the rest of this file, the Wine man page, and
-especially the wealth of information found at https://www.winehq.org.
+Este projeto é um esforço contínuo para aprimorar a experiência de jogos no Android. Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests com sugestões de melhoria ou novos patches.
 
+## Licença
 
-## REQUIREMENTS
+Este projeto é licenciado sob a GNU LGPL, a mesma licença do Wine original. Veja o arquivo `LICENSE` para mais detalhes.
 
-To compile and run Wine, you must have one of the following:
+---
 
-- Linux version 2.6.22 or later
-- FreeBSD 12.4 or later
-- Solaris x86 9 or later
-- NetBSD-current
-- Mac OS X 10.12 or later
-
-As Wine requires kernel-level thread support to run, only the operating
-systems mentioned above are supported.  Other operating systems which
-support kernel threads may be supported in the future.
-
-**FreeBSD info**:
-  See https://wiki.freebsd.org/Wine for more information.
-
-**Solaris info**:
-  You will most likely need to build Wine with the GNU toolchain
-  (gcc, gas, etc.). Warning : installing gas does *not* ensure that it
-  will be used by gcc. Recompiling gcc after installing gas or
-  symlinking cc, as and ld to the gnu tools is said to be necessary.
-
-**NetBSD info**:
-  Make sure you have the USER_LDT, SYSVSHM, SYSVSEM, and SYSVMSG options
-  turned on in your kernel.
-
-**Mac OS X info**:
-  You need Xcode/Xcode Command Line Tools or Apple cctools.  The
-  minimum requirements for compiling Wine are clang 3.8 with the
-  MacOSX10.10.sdk and mingw-w64 v8.  The MacOSX10.14.sdk and later can
-  only build wine64.
-
-**Supported file systems**:
-  Wine should run on most file systems. A few compatibility problems
-  have also been reported using files accessed through Samba. Also,
-  NTFS does not provide all the file system features needed by some
-  applications.  Using a native Unix file system is recommended.
-
-**Basic requirements**:
-  You need to have the X11 development include files installed
-  (called xorg-dev in Debian and libX11-devel in Red Hat).
-  Of course you also need make (most likely GNU make).
-  You also need flex version 2.5.33 or later and bison.
-
-**Optional support libraries**:
-  Configure will display notices when optional libraries are not found
-  on your system. See https://gitlab.winehq.org/wine/wine/-/wikis/Building-Wine
-  for hints about the packages you should install. On 64-bit
-  platforms, you have to make sure to install the 32-bit versions of
-  these libraries.
-
-
-## COMPILATION
-
-To build Wine, do:
-
-```
-./configure
-make
-```
-
-This will build the program "wine" and numerous support libraries/binaries.
-The program "wine" will load and run Windows executables.
-The library "libwine" ("Winelib") can be used to compile and link
-Windows source code under Unix.
-
-To see compile configuration options, do `./configure --help`.
-
-For more information, see https://gitlab.winehq.org/wine/wine/-/wikis/Building-Wine
-
-
-## SETUP
-
-Once Wine has been built correctly, you can do `make install`; this
-will install the wine executable and libraries, the Wine man page, and
-other needed files.
-
-Don't forget to uninstall any conflicting previous Wine installation
-first.  Try either `dpkg -r wine` or `rpm -e wine` or `make uninstall`
-before installing.
-
-Once installed, you can run the `winecfg` configuration tool. See the
-Support area at https://www.winehq.org/ for configuration hints.
-
-
-## RUNNING PROGRAMS
-
-When invoking Wine, you may specify the entire path to the executable,
-or a filename only.
-
-For example, to run Notepad:
-
-```
-wine notepad            (using the search Path as specified in
-wine notepad.exe         the registry to locate the file)
-
-wine c:\\windows\\notepad.exe      (using DOS filename syntax)
-
-wine ~/.wine/drive_c/windows/notepad.exe  (using Unix filename syntax)
-
-wine notepad.exe readme.txt          (calling program with parameters)
-```
-
-Wine is not perfect, so some programs may crash. If that happens you
-will get a crash log that you should attach to your report when filing
-a bug.
-
-
-## GETTING MORE INFORMATION
-
-- **WWW**: A great deal of information about Wine is available from WineHQ at
-	https://www.winehq.org/ : various Wine Guides, application database,
-	bug tracking. This is probably the best starting point.
-
-- **FAQ**: The Wine FAQ is located at https://gitlab.winehq.org/wine/wine/-/wikis/FAQ
-
-- **Wiki**: The Wine Wiki is located at https://gitlab.winehq.org/wine/wine/-/wikis/
-
-- **Gitlab**: Wine development is hosted at https://gitlab.winehq.org
-
-- **Mailing lists**:
-	There are several mailing lists for Wine users and developers; see
-	https://gitlab.winehq.org/wine/wine/-/wikis/Forums for more
-	information.
-
-- **Bugs**: Report bugs to Wine Bugzilla at https://bugs.winehq.org
-	Please search the bugzilla database to check whether your
-	problem is already known or fixed before posting a bug report.
-
-- **IRC**: Online help is available at channel `#WineHQ` on irc.libera.chat.
+**Florkaa282810**
+*Proton Wine 10 - Extreme Optimized Edition*

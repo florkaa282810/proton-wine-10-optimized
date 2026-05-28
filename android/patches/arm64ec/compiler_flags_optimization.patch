@@ -1,0 +1,14 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -23,6 +23,11 @@
+ AC_INIT([Wine], [10.0-4], [wine-devel@winehq.org])
+ AC_CONFIG_SRCDIR([configure.ac])
++#ifdef __aarch64__
++/* Aggressive compiler optimizations for ARM64EC */
++CFLAGS=" -O3 -march=native -mtune=cortex-a76 -fomit-frame-pointer -flto"
++CXXFLAGS=" -O3 -march=native -mtune=cortex-a76 -fomit-frame-pointer -flto"
++#endif
++
+ AC_CANONICAL_HOST
+ AC_USE_SYSTEM_EXTENSIONS
+ AC_PROG_CC

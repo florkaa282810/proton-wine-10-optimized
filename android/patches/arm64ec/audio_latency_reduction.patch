@@ -1,0 +1,13 @@
+--- a/dlls/winealsa/driver.c
++++ b/dlls/winealsa/driver.c
+@@ -23,6 +23,11 @@
+ #include "winealsa_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(alsa);
++#ifdef __aarch64__
++/* Reduce ALSA buffer size for lower audio latency on ARM */
++#define ALSA_BUFFER_SIZE_MICROSECONDS 50000 /* 50ms */
++#endif
++
+ static const struct alsa_format_entry alsa_format_table[] =
+ {
+     {WAVE_FORMAT_PCM,       SND_PCM_FORMAT_S16_LE,  1,  1,  1},

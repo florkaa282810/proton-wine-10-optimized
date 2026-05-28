@@ -223,6 +223,11 @@ do
       "arm64ec/aggressive_syscall_fastpath.patch"
       "arm64ec/vulkan_tile_optimization.patch"
       "arm64ec/ntdll_aggressive_memory.patch"
+      "arm64ec/audio_latency_reduction.patch"
+      "arm64ec/io_throughput_boost.patch"
+      "arm64ec/spinlock_optimization.patch"
+      "arm64ec/l3_cache_hints.patch"
+      "arm64ec/compiler_flags_optimization.patch"
 
       # fix build
       "arm64ec/dlls_wdscore_wdscore_spec.patch"

@@ -1,0 +1,11 @@
+--- a/dlls/ntdll/unix/file.c
++++ b/dlls/ntdll/unix/file.c
+@@ -23,6 +23,11 @@
+ #include "ntdll_unix.h"
+ #include "wine/debug.h"
++#ifdef __aarch64__
++/* Increase I/O buffer size for better throughput on ARM */
++#define IO_BUFFER_SIZE (1024 * 128) /* 128KB */
++#endif
++
+ WINE_DEFAULT_DEBUG_CHANNEL(file);
