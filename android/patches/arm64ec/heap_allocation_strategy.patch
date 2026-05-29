@@ -1,0 +1,13 @@
+--- a/dlls/ntdll/heap.c
++++ b/dlls/ntdll/heap.c
+@@ -23,6 +23,11 @@
+ #include "ntdll_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(heap);
++#ifdef __aarch64__
++/* Custom heap allocation strategy for small objects on ARM */
++#define HEAP_ALLOC_SMALL_OBJECT_THRESHOLD 256 /* 256 bytes */
++#define HEAP_ALLOC_SMALL_OBJECT_POOL_SIZE 1024 * 1024 /* 1MB pool */
++#endif
++
+ static void heap_init(void)
+ {

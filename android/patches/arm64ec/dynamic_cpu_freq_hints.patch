@@ -1,0 +1,12 @@
+--- a/dlls/ntdll/unix/cpu.c
++++ b/dlls/ntdll/unix/cpu.c
+@@ -23,6 +23,11 @@
+ #include "ntdll_unix.h"
+ #include "wine/debug.h"
++#ifdef __aarch64__
++/* Provide hints to the OS for aggressive CPU frequency scaling during game execution */
++#define DYNAMIC_CPU_FREQ_HINTS 1
++#define CPU_FREQ_GOVERNOR_PERFORMANCE 1 /* Request performance governor */
++#endif
++
+ WINE_DEFAULT_DEBUG_CHANNEL(ntdll);

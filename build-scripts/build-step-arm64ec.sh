@@ -227,7 +227,17 @@ do
       "arm64ec/io_throughput_boost.patch"
       "arm64ec/spinlock_optimization.patch"
       "arm64ec/l3_cache_hints.patch"
-      "arm64ec/compiler_flags_optimization.patch"
+      "arm64ec/compiler_flags_optimization.patch"\
+      "arm64ec/vulkan_descriptor_optimization.patch"\
+      "arm64ec/heap_allocation_strategy.patch"\
+      "arm64ec/signal_handling_latency.patch"\
+      "arm64ec/thread_priority_fine_grained.patch"\
+      "arm64ec/dxvk_adreno_hints.patch"\
+      "arm64ec/gpu_fence_optimization.patch"\
+      "arm64ec/shader_compilation_caching.patch"\
+      "arm64ec/context_switching_reduction.patch"\
+      "arm64ec/timer_resolution_boost.patch"\
+      "arm64ec/dynamic_cpu_freq_hints.patch"
 
       # fix build
       "arm64ec/dlls_wdscore_wdscore_spec.patch"

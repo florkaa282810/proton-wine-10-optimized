@@ -1,0 +1,13 @@
+--- a/dlls/wined3d/vk_descriptor_set.c
++++ b/dlls/wined3d/vk_descriptor_set.c
+@@ -23,6 +23,11 @@
+ #include "wined3d_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(wined3d);
++#ifdef __aarch64__
++/* Optimize Vulkan descriptor set updates for mobile GPUs */
++#define VK_DESCRIPTOR_SET_OPTIMIZATION 1
++#define MAX_DESCRIPTOR_SETS_PER_FRAME 16 /* Limit frequent re-bindings */
++#endif
++
+ static void wined3d_vk_descriptor_set_cleanup(struct wined3d_vk_descriptor_set *descriptor_set)
+ {

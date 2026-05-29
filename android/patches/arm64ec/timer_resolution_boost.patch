@@ -1,0 +1,13 @@
+--- a/dlls/ntdll/time.c
++++ b/dlls/ntdll/time.c
+@@ -23,6 +23,11 @@
+ #include "ntdll_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(time);
++#ifdef __aarch64__
++/* Increase timer resolution for more accurate scheduling and reduced input lag */
++#define TIMER_RESOLUTION_BOOST 1
++#define HIGH_RESOLUTION_TIMER_PERIOD_US 1000 /* 1ms resolution */
++#endif
++
+ static void time_init(void)
+ {

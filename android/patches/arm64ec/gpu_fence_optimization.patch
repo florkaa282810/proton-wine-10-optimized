@@ -1,0 +1,13 @@
+--- a/dlls/wined3d/vk_queue.c
++++ b/dlls/wined3d/vk_queue.c
+@@ -23,6 +23,11 @@
+ #include "wined3d_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(wined3d);
++#ifdef __aarch64__
++/* Optimize GPU fence waiting to reduce CPU-GPU synchronization overhead */
++#define GPU_FENCE_OPTIMIZATION 1
++#define MAX_CPU_WAIT_FOR_GPU_FENCE_MS 1 /* Minimize CPU stalls */
++#endif
++
+ static void wined3d_vk_queue_cleanup(struct wined3d_vk_queue *queue)
+ {

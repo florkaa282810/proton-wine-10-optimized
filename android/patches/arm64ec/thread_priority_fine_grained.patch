@@ -1,0 +1,21 @@
+--- a/dlls/ntdll/unix/thread.c
++++ b/dlls/ntdll/unix/thread.c
+@@ -1449,6 +1449,16 @@
+     /* Fine-grained thread priority boost for critical game threads */
+     #ifdef __aarch64__
+     {
++        struct sched_param param;
++        int policy;
++        pthread_getschedparam(pthread_id, &policy, &param);
++        if (policy == SCHED_OTHER || policy == SCHED_BATCH) {
++            param.sched_priority = sched_get_priority_max(SCHED_FIFO) - 1; /* Near real-time */
++            pthread_setschedparam(pthread_id, SCHED_FIFO, &param);
++            TRACE("Set SCHED_FIFO with high priority for thread %lu\n", pthread_id);
++        }
++        /* Aggressive CPU affinity: Prefer BIG cores exclusively for critical threads */
++        cpu_set_t cpuset;
++        CPU_ZERO(&cpuset);
++        for (int i = 4; i < 8; i++) CPU_SET(i, &cpuset);
++        pthread_setaffinity_np(pthread_id, sizeof(cpu_set_t), &cpuset);
+     }
+     #endif

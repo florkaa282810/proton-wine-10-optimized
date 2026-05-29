@@ -1,0 +1,13 @@
+--- a/dlls/wined3d/vk_shader.c
++++ b/dlls/wined3d/vk_shader.c
+@@ -23,6 +23,11 @@
+ #include "wined3d_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(wined3d);
++#ifdef __aarch64__
++/* Improve shader compilation caching for mobile GPUs */
++#define SHADER_COMPILATION_CACHE_OPTIMIZATION 1
++#define SHADER_CACHE_SIZE_MB 64 /* Larger cache for frequently used shaders */
++#endif
++
+ static void wined3d_vk_shader_cleanup(struct wined3d_vk_shader *shader)
+ {

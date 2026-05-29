@@ -1,0 +1,12 @@
+--- a/dlls/ntdll/unix/signal_arm64.c
++++ b/dlls/ntdll/unix/signal_arm64.c
+@@ -23,6 +23,11 @@
+ #include "ntdll_unix.h"
+ #include "wine/debug.h"
++#ifdef __aarch64__
++/* Further reduce signal handling latency for game threads */
++#define SIGNAL_HANDLING_FAST_PATH 1
++#define MAX_SIGNAL_QUEUE_DEPTH 4 /* Process signals more frequently */
++#endif
++
+ WINE_DEFAULT_DEBUG_CHANNEL(ntdll);
