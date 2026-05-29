@@ -1,0 +1,13 @@
+--- a/dlls/wined3d/vk_device.c
++++ b/dlls/wined3d/vk_device.c
+@@ -23,6 +23,11 @@
+ #include "wined3d_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(wined3d);
++#ifdef __aarch64__
++/* Provide hints for asynchronous compute where supported by GPU/driver */
++#define ASYNCHRONOUS_COMPUTE_HINTS 1
++#define ENABLE_ASYNC_COMPUTE_QUEUE 1
++#endif
++
+ static void wined3d_vk_device_cleanup(struct wined3d_vk_device *device)
+ {

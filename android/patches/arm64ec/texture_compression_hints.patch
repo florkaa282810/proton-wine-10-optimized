@@ -1,0 +1,13 @@
+--- a/dlls/wined3d/vk_texture.c
++++ b/dlls/wined3d/vk_texture.c
+@@ -23,6 +23,11 @@
+ #include "wined3d_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(wined3d);
++#ifdef __aarch64__
++/* Provide hints for aggressive texture compression (e.g., ASTC) */
++#define TEXTURE_COMPRESSION_HINTS 1
++#define PREFER_ASTC_COMPRESSION 1
++#endif
++
+ static void wined3d_vk_texture_cleanup(struct wined3d_vk_texture *texture)
+ {

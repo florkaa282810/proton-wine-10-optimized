@@ -237,7 +237,17 @@ do
       "arm64ec/shader_compilation_caching.patch"\
       "arm64ec/context_switching_reduction.patch"\
       "arm64ec/timer_resolution_boost.patch"\
-      "arm64ec/dynamic_cpu_freq_hints.patch"
+      "arm64ec/dynamic_cpu_freq_hints.patch"\
+      "arm64ec/vulkan_memory_management.patch"\
+      "arm64ec/render_pass_merging.patch"\
+      "arm64ec/texture_compression_hints.patch"\
+      "arm64ec/framebuffer_compression.patch"\
+      "arm64ec/dynamic_resolution_scaling_hints.patch"\
+      "arm64ec/gpu_instancing_optimization.patch"\
+      "arm64ec/z_prepass_optimization.patch"\
+      "arm64ec/shader_instruction_reduction.patch"\
+      "arm64ec/asynchronous_compute_hints.patch"\
+      "arm64ec/render_target_swizzling.patch"
 
       # fix build
       "arm64ec/dlls_wdscore_wdscore_spec.patch"

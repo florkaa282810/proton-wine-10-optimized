@@ -1,0 +1,13 @@
+--- a/dlls/wined3d/vk_shader_module.c
++++ b/dlls/wined3d/vk_shader_module.c
+@@ -23,6 +23,11 @@
+ #include "wined3d_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(wined3d);
++#ifdef __aarch64__
++/* Look for opportunities to simplify shader instructions for mobile GPUs */
++#define SHADER_INSTRUCTION_REDUCTION 1
++#define ENABLE_SHADER_OPTIMIZER_MOBILE 1
++#endif
++
+ static void wined3d_vk_shader_module_cleanup(struct wined3d_vk_shader_module *shader_module)
+ {

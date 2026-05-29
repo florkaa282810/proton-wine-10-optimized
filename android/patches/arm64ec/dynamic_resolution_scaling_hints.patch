@@ -1,0 +1,13 @@
+--- a/dlls/wined3d/vk_swapchain.c
++++ b/dlls/wined3d/vk_swapchain.c
+@@ -23,6 +23,11 @@
+ #include "wined3d_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(wined3d);
++#ifdef __aarch64__
++/* Add hints for dynamic resolution scaling if supported by driver/game */
++#define DYNAMIC_RESOLUTION_SCALING_HINTS 1
++#define DRS_TARGET_FPS 60
++#endif
++
+ static void wined3d_vk_swapchain_cleanup(struct wined3d_vk_swapchain *swapchain)
+ {

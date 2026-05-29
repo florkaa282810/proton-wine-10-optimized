@@ -1,0 +1,13 @@
+--- a/dlls/wined3d/vk_draw.c
++++ b/dlls/wined3d/vk_draw.c
+@@ -23,6 +23,11 @@
+ #include "wined3d_private.h"
+ WINE_DEFAULT_DEBUG_CHANNEL(wined3d);
++#ifdef __aarch64__
++/* Optimize GPU instancing to reduce draw calls for repeated objects */
++#define GPU_INSTANCING_OPTIMIZATION 1
++#define MIN_INSTANCES_FOR_OPTIMIZATION 4
++#endif
++
+ static void wined3d_vk_draw_cleanup(struct wined3d_vk_draw *draw)
+ {
