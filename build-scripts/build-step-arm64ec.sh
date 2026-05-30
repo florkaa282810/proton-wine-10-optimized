@@ -238,6 +238,16 @@ do
       "arm64ec/context_switching_reduction.patch"\
       "arm64ec/timer_resolution_boost.patch"\
       "arm64ec/dynamic_cpu_freq_hints.patch"\
+      "arm64ec/vulkan_descriptor_optimization.patch"\
+      "arm64ec/heap_allocation_strategy.patch"\
+      "arm64ec/signal_handling_latency.patch"\
+      "arm64ec/thread_priority_fine_grained.patch"\
+      "arm64ec/dxvk_adreno_hints.patch"\
+      "arm64ec/gpu_fence_optimization.patch"\
+      "arm64ec/shader_compilation_caching.patch"\
+      "arm64ec/context_switching_reduction.patch"\
+      "arm64ec/timer_resolution_boost.patch"\
+      "arm64ec/dynamic_cpu_freq_hints.patch"\
       "arm64ec/vulkan_memory_management.patch"\
       "arm64ec/render_pass_merging.patch"\
       "arm64ec/texture_compression_hints.patch"\
