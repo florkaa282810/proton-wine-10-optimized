@@ -262,7 +262,9 @@ do
       "arm64ec/gpu_pipeline_aggressive_content.patch"\
       "arm64ec/memory_aggressive_content.patch"\
       "arm64ec/assembler_neon_memcpy.patch"\
-      "arm64ec/prefetch_aggressive.patch"
+      "arm64ec/prefetch_aggressive.patch"\
+      "arm64ec/io_optimization_open_world.patch"\
+      "arm64ec/low_level_impact_optimizations.patch"
 
       # fix build
       "arm64ec/dlls_wdscore_wdscore_spec.patch"
