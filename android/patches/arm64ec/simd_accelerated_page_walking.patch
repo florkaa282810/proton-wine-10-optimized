@@ -1,0 +1,47 @@
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -10,6 +10,39 @@
+ #include "ntdll_private.h"
+ #include "unix_private.h"
+ 
++// --- START GENIUS OPTIMIZATIONS: SIMD-ACCELERATED PAGE WALKING ---
++#ifdef __ARM_ARCH
++#include <arm_neon.h>
++
++// Conceptual SIMD-accelerated page table walk/scan
++// This would involve processing multiple page table entries (PTEs) in parallel
++// using NEON intrinsics to quickly identify memory permissions or attributes.
++
++// Example: Function to scan a range of PTEs for a specific flag (e.g., writable)
++static inline int scan_pte_range_simd(uint64_t *pte_start, size_t num_ptes, uint64_t target_flag) {
++    // Assuming PTEs are 64-bit values
++    uint64x2_t target_vec = vdupq_n_u64(target_flag);
++
++    for (size_t i = 0; i < num_ptes; i += 2) {
++        if (i + 1 < num_ptes) {
++            uint64x2_t pte_vec = vld1q_u64(pte_start + i);
++            // Compare PTEs with the target flag
++            uint64x2_t cmp_res = vceqq_u64(vandq_u64(pte_vec, target_vec), target_vec);
++            // Check if any lane matched
++            if (vgetq_lane_u64(cmp_res, 0) || vgetq_lane_u64(cmp_res, 1)) {
++                return 1; // Found a match
++            }
++        } else {
++            // Handle odd number of PTEs
++            if ((pte_start[i] & target_flag) == target_flag) {
++                return 1;
++            }
++        }
++    }
++    return 0; // No match found
++}
++
++// This function would be integrated into memory management routines
++// that frequently scan page tables, e.g., for protection changes or fault handling.
++
++#endif
++// --- END GENIUS OPTIMIZATIONS: SIMD-ACCELERATED PAGE WALKING ---
++
+ /* File descriptor table */
+ static struct file_descriptor **file_descriptors;
+ static unsigned int file_descriptor_count;
