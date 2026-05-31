@@ -1,0 +1,43 @@
+--- a/dlls/ntdll/unix/signal_arm64.c
++++ b/dlls/ntdll/unix/signal_arm64.c
+@@ -10,6 +10,35 @@
+ #include "ntdll_private.h"
+ #include "unix_private.h"
+ 
++// --- START GENIUS OPTIMIZATIONS: ZERO-LATENCY SYSCALL INJECTION ---
++#ifdef __ARM_ARCH
++
++// Conceptual direct ARM64 assembly for common syscalls
++// This bypasses libc wrappers for minimal overhead.
++// Note: Syscall numbers and register usage are specific to ARM64 Linux ABI.
++
++static inline long __attribute__((always_inline)) direct_syscall(long syscall_num, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6) {
++    register long _x0 __asm__("x0") = arg1;
++    register long _x1 __asm__("x1") = arg2;
++    register long _x2 __asm__("x2") = arg3;
++    register long _x3 __asm__("x3") = arg4;
++    register long _x4 __asm__("x4") = arg5;
++    register long _x5 __asm__("x5") = arg6;
++    register long _syscall_num __asm__("x8") = syscall_num;
++    register long _result __asm__("x0");
++
++    __asm__ __volatile__ (
++        "svc #0" // Supervisor Call instruction
++        : "=r"(_result)
++        : "r"(_x0), "r"(_x1), "r"(_x2), "r"(_x3), "r"(_x4), "r"(_x5), "r"(_syscall_num)
++        : "memory", "cc"
++    );
++    return _result;
++}
++
++// Example: Direct read syscall
++ssize_t direct_read(int fd, void *buf, size_t count) {
++    return (ssize_t)direct_syscall(63, fd, (long)buf, count, 0, 0, 0); // SYS_read is 63 on ARM64 Linux
++}
++
++#endif
++// --- END GENIUS OPTIMIZATIONS: ZERO-LATENCY SYSCALL INJECTION ---
++
+ /* File descriptor table */
+ static struct file_descriptor **file_descriptors;
+ static unsigned int file_descriptor_count;
