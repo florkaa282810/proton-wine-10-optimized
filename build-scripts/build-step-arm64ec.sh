@@ -257,7 +257,10 @@ do
       "arm64ec/z_prepass_optimization.patch"\
       "arm64ec/shader_instruction_reduction.patch"\
       "arm64ec/asynchronous_compute_hints.patch"\
-      "arm64ec/render_target_swizzling.patch"
+      "arm64ec/render_target_swizzling.patch"\
+      "arm64ec/cpu_affinity_dynamic_content.patch"\
+      "arm64ec/gpu_pipeline_aggressive_content.patch"\
+      "arm64ec/memory_aggressive_content.patch"
 
       # fix build
       "arm64ec/dlls_wdscore_wdscore_spec.patch"
