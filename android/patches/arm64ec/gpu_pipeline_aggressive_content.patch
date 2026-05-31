@@ -1,0 +1,67 @@
+--- a/dlls/d3dcompiler_43/compiler.c
++++ b/dlls/d3dcompiler_43/compiler.c
+@@ -10,6 +10,40 @@
+ #include "d3dcompiler.h"
+ #include "d3dcompiler_private.h"
+ 
++// --- START ADRENO GPU PIPELINE OPTIMIZATIONS ---
++#ifdef __ARM_ARCH
++#include <stdbool.h>
++
++// Placeholder for Adreno-specific command buffer pre-building
++static void adreno_prebuild_command_buffers( void *context, void *commands ) {
++    // In a real scenario, this would involve direct Adreno driver calls
++    // to pre-allocate and partially fill command buffers for common operations.
++    // This reduces CPU overhead during actual rendering.
++    TRACE("ADRENO: Pre-building command buffers.\n");
++}
++
++// Placeholder for dynamic double/triple buffering management
++static bool adreno_manage_dynamic_buffering( void *context, int current_fps ) {
++    // Dynamically adjust between double and triple buffering based on FPS and GPU load.
++    // If FPS is high and stable, use double buffering for lower latency.
++    // If FPS is fluctuating or low, use triple buffering to smooth out presentation.
++    if (current_fps < 55) {
++        TRACE("ADRENO: Switching to triple buffering for smoother presentation.\n");
++        return true; // Use triple buffering
++    } else {
++        TRACE("ADRENO: Using double buffering for lower latency.\n");
++        return false; // Use double buffering
++    }
++}
++
++// Placeholder for grouping small draw calls
++static void adreno_group_draw_calls( void *context, void *draw_calls_list ) {
++    // Analyze incoming draw calls and combine small, consecutive ones into larger batches.
++    // This reduces the number of state changes and driver calls, improving GPU efficiency.
++    TRACE("ADRENO: Grouping small draw calls into larger batches.\n");
++}
++
++// Placeholder for NEON-accelerated shader/matrix preparation
++static void adreno_neon_prepare_data( void *data, size_t size ) {
++    // Use ARM NEON intrinsics to accelerate common data preparation tasks
++    // like matrix multiplications, vector normalizations, or shader constant updates
++    // before sending them to the GPU.
++    TRACE("ADRENO: Accelerating data preparation with NEON.\n");
++}
++#endif
++// --- END ADRENO GPU PIPELINE OPTIMIZATIONS ---
++
+ /* D3DCompiler_43 functions */
+ 
+ /***********************************************************************
+@@ -112,6 +146,13 @@
+     if (FAILED(hr))
+         goto end;
+ 
++#ifdef __ARM_ARCH
++    // Example integration points
++    adreno_prebuild_command_buffers( compiler, NULL );
++    adreno_manage_dynamic_buffering( compiler, 60 ); // Assume target FPS
++    adreno_group_draw_calls( compiler, NULL );
++    adreno_neon_prepare_data( NULL, 0 );
++#endif
++
+     hr = D3DCompile(pSrcData, SrcDataSize, pFileName, pDefines, pInclude, pEntrypoint, pTarget, Flags1, Flags2, ppCode, ppErrorMsgs);
+ 
+ end:
