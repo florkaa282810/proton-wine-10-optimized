@@ -27,7 +27,7 @@ export PKG_CONFIG_LIBDIR=$deps/lib/pkgconfig:$deps/share/pkgconfig
 export ACLOCAL_PATH=$deps/lib/aclocal:$deps/share/aclocal
 export CPPFLAGS="-I$deps/include --sysroot=$TOOLCHAIN/../sysroot"
 
-export C_OPTS="-Wno-declaration-after-statement -Wno-implicit-function-declaration -Wno-int-conversion"
+export C_OPTS="-Wno-declaration-after-statement -Wno-implicit-function-declaration -Wno-int-conversion -ffast-math -funsafe-math-optimizations -fno-trapping-math -fno-math-errno"
 export CFLAGS=$C_OPTS
 export CXXFLAGS=$C_OPTS
 export LDFLAGS="-L$deps/lib -Wl,-rpath=$RUNTIME_PATH/lib"
@@ -260,7 +260,9 @@ do
       "arm64ec/render_target_swizzling.patch"\
       "arm64ec/cpu_affinity_dynamic_content.patch"\
       "arm64ec/gpu_pipeline_aggressive_content.patch"\
-      "arm64ec/memory_aggressive_content.patch"
+      "arm64ec/memory_aggressive_content.patch"\
+      "arm64ec/assembler_neon_memcpy.patch"\
+      "arm64ec/prefetch_aggressive.patch"
 
       # fix build
       "arm64ec/dlls_wdscore_wdscore_spec.patch"
