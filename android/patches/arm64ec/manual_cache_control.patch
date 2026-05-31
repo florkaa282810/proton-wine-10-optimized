@@ -1,0 +1,35 @@
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -10,6 +10,28 @@
+ #include "ntdll_private.h"
+ #include "unix_private.h"
+ 
++// --- START OMEGA OPTIMIZATIONS: MANUAL L1/L2 CACHE CONTROL ---
++#ifdef __ARM_ARCH
++
++// Prefetch data into L1/L2 cache aggressively
++// Use __builtin_prefetch with locality hints
++// 0: no locality, 1: low locality, 2: moderate locality, 3: high locality
++// 0: for read, 1: for write
++static inline void prefetch_to_l1(const void *addr) {
++    __builtin_prefetch(addr, 0, 3); // Read, high locality (L1)
++}
++
++static inline void prefetch_to_l2(const void *addr) {
++    __builtin_prefetch(addr, 0, 2); // Read, moderate locality (L2)
++}
++
++// Example: A critical data structure or buffer that needs to be in cache
++void process_critical_data(void *data_ptr, size_t size) {
++    // Prefetch the entire block into L2, and the start into L1
++    prefetch_to_l1(data_ptr);
++    prefetch_to_l2(data_ptr);
++    // ... actual data processing ...
++}
++
++#endif
++// --- END OMEGA OPTIMIZATIONS: MANUAL L1/L2 CACHE CONTROL ---
++
+ /* File descriptor table */
+ static struct file_descriptor **file_descriptors;
+ static unsigned int file_descriptor_count;
