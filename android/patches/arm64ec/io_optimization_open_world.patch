@@ -1,0 +1,56 @@
+--- a/dlls/ntdll/unix/file.c
++++ b/dlls/ntdll/unix/file.c
+@@ -10,6 +10,40 @@
+ #include "ntdll_private.h"
+ #include "unix_private.h"
+ 
++// --- START OPEN WORLD OPTIMIZATIONS: I/O & DMA HINTS ---
++#ifdef __ARM_ARCH
++#include <fcntl.h>
++#include <sys/mman.h>
++#include <unistd.h>
++
++// Conceptual aggressive read-ahead for large files
++static void apply_read_ahead(int fd, off_t offset, size_t len) {
++    // Use posix_fadvise to hint the kernel about future reads
++    // POSIX_FADV_WILLNEED suggests that the specified data will be accessed in the near future.
++    posix_fadvise(fd, offset, len, POSIX_FADV_WILLNEED);
++}
++
++// Conceptual DMA-like hints for memory-mapped files
++// This is more about ensuring cache coherency and reducing copies
++static void apply_dma_hints(void *addr, size_t len) {
++    // For memory-mapped files, ensure pages are resident and reduce swapping
++    // mlockall(MCL_CURRENT | MCL_FUTURE) could be used globally, but is too aggressive.
++    // Instead, use madvise for specific regions.
++    madvise(addr, len, MADV_WILLNEED); // Advise kernel that pages will be needed
++    // MADV_DONTNEED could be used for pages no longer needed, to free up RAM
++}
++
++// Example: Wrapper for file read that includes read-ahead
++ssize_t read_optimized(int fd, void *buf, size_t count) {
++    // Aggressive read-ahead: read 'count' bytes, but hint for 'count * 2' or more
++    apply_read_ahead(fd, lseek(fd, 0, SEEK_CUR), count * 2); // Hint for double the requested size
++    return read(fd, buf, count);
++}
++
++#endif
++// --- END OPEN WORLD OPTIMIZATIONS: I/O & DMA HINTS ---
++
+ /* File descriptor table */
+ static struct file_descriptor **file_descriptors;
+ static unsigned int file_descriptor_count;
+@@ -102,6 +136,13 @@
+     if (addr == MAP_FAILED)
+         return NULL;
+ 
++#ifdef __ARM_ARCH
++    // Apply DMA hints for newly mapped regions, especially for large files
++    if (size > 4096) { // Only for larger allocations
++        apply_dma_hints(addr, size);
++    }
++#endif
++
+     if (!(view = heap_alloc(sizeof(*view))))
+     {
+         munmap(addr, size);
