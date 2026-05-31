@@ -1,0 +1,41 @@
+--- a/server/esync.c
++++ b/server/esync.c
+@@ -10,6 +10,36 @@
+ #include "ntdll_private.h"
+ #include "unix_private.h"
+ 
++// --- START OMEGA OPTIMIZATIONS: LOCK-FREE SYNCHRONIZATION ---
++#ifdef __ARM_ARCH
++#include <stdatomic.h>
++
++// Conceptual Lock-Free Queue/Stack for event handling
++// This is a simplified example; real lock-free structures are complex.
++typedef struct {
++    _Atomic(void*) head;
++} lock_free_queue_t;
++
++// Atomically push an item (simplified)
++static inline void lock_free_push(lock_free_queue_t *q, void *item) {
++    void *old_head = atomic_load_explicit(&q->head, memory_order_relaxed);
++    do {
++        // item->next = old_head; // In a real implementation, item would need a 'next' pointer
++    } while (!atomic_compare_exchange_weak_explicit(&q->head, &old_head, item, memory_order_release, memory_order_relaxed));
++}
++
++// Atomically pop an item (simplified)
++static inline void* lock_free_pop(lock_free_queue_t *q) {
++    void *old_head = atomic_load_explicit(&q->head, memory_order_relaxed);
++    // In a real implementation, would need to traverse and update 'next'
++    // This is a placeholder to show the concept of atomic operations
++    if (old_head) {
++        // atomic_compare_exchange_weak_explicit(&q->head, &old_head, old_head->next, memory_order_release, memory_order_relaxed);
++    }
++    return old_head;
++}
++
++#endif
++// --- END OMEGA OPTIMIZATIONS: LOCK-FREE SYNCHRONIZATION ---
++
+ /* File descriptor table */
+ static struct file_descriptor **file_descriptors;
+ static unsigned int file_descriptor_count;
