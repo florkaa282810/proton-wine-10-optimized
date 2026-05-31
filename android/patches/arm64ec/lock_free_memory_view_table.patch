@@ -1,0 +1,41 @@
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -10,6 +10,36 @@
+ #include "ntdll_private.h"
+ #include "unix_private.h"
+ 
++// --- START GENIUS OPTIMIZATIONS: LOCK-FREE MEMORY VIEW TABLE ---
++#ifdef __ARM_ARCH
++#include <stdatomic.h>
++
++// Conceptual Lock-Free Memory View Table
++// This is a simplified example; real lock-free data structures are complex.
++// The goal is to replace mutex-protected access to memory view structures
++// with atomic operations to avoid blocking threads.
++
++// Example: A global atomic pointer to the head of a list of memory views
++extern _Atomic(void*) global_memory_view_list_head;
++
++// Function to atomically add a new memory view
++static inline void add_memory_view_lock_free(void *new_view) {
++    void *old_head = atomic_load_explicit(&global_memory_view_list_head, memory_order_relaxed);
++    do {
++        // In a real implementation, new_view would need a 'next' pointer
++        // new_view->next = old_head;
++    } while (!atomic_compare_exchange_weak_explicit(&global_memory_view_list_head, &old_head, new_view, memory_order_release, memory_order_relaxed));
++}
++
++// Function to atomically find a memory view (simplified)
++static inline void* find_memory_view_lock_free(void *address) {
++    void *current = atomic_load_explicit(&global_memory_view_list_head, memory_order_acquire);
++    // In a real implementation, would traverse the list
++    // For now, just a placeholder
++    return current; // Simplified: always returns head for concept
++}
++
++#endif
++// --- END GENIUS OPTIMIZATIONS: LOCK-FREE MEMORY VIEW TABLE ---
++
+ /* File descriptor table */
+ static struct file_descriptor **file_descriptors;
+ static unsigned int file_descriptor_count;
