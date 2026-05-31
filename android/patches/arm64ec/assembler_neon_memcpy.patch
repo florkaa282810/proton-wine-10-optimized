@@ -1,0 +1,72 @@
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -10,6 +10,40 @@
+ #include "ntdll_private.h"
+ #include "unix_private.h"
+ 
++// --- START NUCLEAR OPTIMIZATIONS: NEON MEMCPY/MEMSET ---
++#ifdef __ARM_ARCH
++#include <arm_neon.h>
++
++// Conceptual NEON-optimized memcpy for 128-bit aligned data
++// In a real scenario, this would be highly optimized inline assembly.
++static void* memcpy_neon_aligned(void *dest, const void *src, size_t n) {
++    uint8_t *d = (uint8_t *)dest;
++    const uint8_t *s = (const uint8_t *)src;
++    size_t i;
++
++    // Handle leading unaligned bytes
++    for (i = 0; i < n && ((uintptr_t)(d + i) & 15); i++) {
++        d[i] = s[i];
++    }
++    // Copy 16-byte blocks using NEON intrinsics
++    for (; i + 15 < n; i += 16) {
++        vst1q_u8(d + i, vld1q_u8(s + i));
++    }
++    // Handle trailing unaligned bytes
++    for (; i < n; i++) {
++        d[i] = s[i];
++    }
++    return dest;
++}
++
++// Conceptual NEON-optimized memset for 128-bit aligned data
++static void* memset_neon_aligned(void *s, int c, size_t n) {
++    uint8_t *ptr = (uint8_t *)s;
++    uint8x16_t val = vdupq_n_u8((uint8_t)c);
++    size_t i;
++
++    // Handle leading unaligned bytes
++    for (i = 0; i < n && ((uintptr_t)(ptr + i) & 15); i++) {
++        ptr[i] = (uint8_t)c;
++    }
++    // Set 16-byte blocks using NEON intrinsics
++    for (; i + 15 < n; i += 16) {
++        vst1q_u8(ptr + i, val);
++    }
++    // Handle trailing unaligned bytes
++    for (; i < n; i++) {
++        ptr[i] = (uint8_t)c;
++    }
++    return s;
++}
++#endif
++// --- END NUCLEAR OPTIMIZATIONS: NEON MEMCPY/MEMSET ---
++
+ /* The list of free address ranges */
+ static struct list free_ranges = LIST_INIT(free_ranges);
+ 
+@@ -102,6 +136,13 @@
+     if (addr == MAP_FAILED)
+         return NULL;
+ 
++#ifdef __ARM_ARCH
++    // Example: Replace standard memcpy/memset with NEON versions where appropriate
++    // This would require careful analysis of call sites for alignment guarantees.
++    // For instance, if a large, aligned buffer is being zeroed:
++    // memset_neon_aligned(addr, 0, size);
++#endif
++
+     if (!(view = heap_alloc(sizeof(*view))))
+     {
+         munmap(addr, size);
