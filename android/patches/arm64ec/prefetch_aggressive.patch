@@ -1,0 +1,42 @@
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -10,6 +10,22 @@
+ #include "ntdll_private.h"
+ #include "unix_private.h"
+ 
++// --- START NUCLEAR OPTIMIZATIONS: AGGRESSIVE PREFETCHING ---
++#ifdef __ARM_ARCH
++#include <arm_acle.h>
++
++// Macro for aggressive prefetching
++// Use PRFM PLDL1KEEP, [Xn, #offset] for data prefetch to L1 cache
++// Use PRFM PLIL1KEEP, [Xn, #offset] for instruction prefetch to L1 cache
++#define PREFETCH_DATA_FOR_READ(addr) __builtin_prefetch(addr, 0, 3) // Read, high locality
++#define PREFETCH_DATA_FOR_WRITE(addr) __builtin_prefetch(addr, 1, 3) // Write, high locality
++
++// Example: Prefetching data before a large memory access
++static void prefetch_large_buffer(const void *buffer, size_t size) {
++    for (size_t i = 0; i < size; i += 256) { // Prefetch in 256-byte chunks
++        PREFETCH_DATA_FOR_READ((const char*)buffer + i);
++    }
++}
++#endif
++// --- END NUCLEAR OPTIMIZATIONS: AGGRESSIVE PREFETCHING ---
++
+ /* The list of free address ranges */
+ static struct list free_ranges = LIST_INIT(free_ranges);
+ 
+@@ -102,6 +118,13 @@
+     if (addr == MAP_FAILED)
+         return NULL;
+ 
++#ifdef __ARM_ARCH
++    // Example integration: Prefetch the newly mapped region if it's likely to be accessed soon
++    if (size > 4096) { // Only for larger allocations
++        prefetch_large_buffer(addr, size);
++    }
++#endif
++
+     if (!(view = heap_alloc(sizeof(*view))))
+     {
+         munmap(addr, size);
