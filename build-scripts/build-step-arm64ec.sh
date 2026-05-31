@@ -264,7 +264,11 @@ do
       "arm64ec/assembler_neon_memcpy.patch"\
       "arm64ec/prefetch_aggressive.patch"\
       "arm64ec/io_optimization_open_world.patch"\
-      "arm64ec/low_level_impact_optimizations.patch"
+      "arm64ec/low_level_impact_optimizations.patch"\
+      "arm64ec/ultra_fast_thunk_dispatcher.patch"\
+      "arm64ec/lock_free_memory_view_table.patch"\
+      "arm64ec/zero_latency_syscall_injection.patch"\
+      "arm64ec/simd_accelerated_page_walking.patch"
 
       # fix build
       "arm64ec/dlls_wdscore_wdscore_spec.patch"
