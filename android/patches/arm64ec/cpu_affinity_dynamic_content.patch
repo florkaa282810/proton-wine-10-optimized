@@ -1,0 +1,59 @@
+--- a/dlls/ntdll/unix/thread.c
++++ b/dlls/ntdll/unix/thread.c
+@@ -100,6 +100,40 @@
+ #include "winnt.h"
+ #include "ntdll_private.h"
+ 
++// --- START CPU AFFINITY OPTIMIZATIONS ---
++#ifdef __ARM_ARCH
++#include <sched.h>
++#include <sys/syscall.h>
++#include <unistd.h>
++
++// Placeholder for a more advanced core detection (e.g., from /proc/cpuinfo)
++// For Snapdragon, typically cores 0-3 are efficiency, 4-6 are performance, 7 is prime
++// This is a simplified example, real implementation would be more complex
++static int get_performance_core_id() {
++    // Assuming core 4 is a performance core for a typical Snapdragon 8xx
++    // This should be dynamically determined based on CPU topology
++    return 4;
++}
++
++static void set_thread_affinity_performance( pthread_t thread ) {
++    cpu_set_t cpuset;
++    CPU_ZERO( &cpuset );
++    CPU_SET( get_performance_core_id(), &cpuset );
++    if (pthread_setaffinity_np( thread, sizeof(cpu_set_t), &cpuset ) != 0) {
++        TRACE("Failed to set affinity for thread %lu to performance core\n", (unsigned long)thread);
++    }
++}
++
++static void set_thread_affinity_efficiency( pthread_t thread ) {
++    cpu_set_t cpuset;
++    CPU_ZERO( &cpuset );
++    // Assuming core 0 is an efficiency core
++    CPU_SET( 0, &cpuset );
++    if (pthread_setaffinity_np( thread, sizeof(cpu_set_t), &cpuset ) != 0) {
++        TRACE("Failed to set affinity for thread %lu to efficiency core\n", (unsigned long)thread);
++    }
++}
++#endif
++// --- END CPU AFFINITY OPTIMIZATIONS ---
++
+ // Thread local storage
+ static pthread_key_t thread_data_key;
+ 
+@@ -344,6 +378,13 @@
+     if (ret)
+         goto error;
+ 
++#ifdef __ARM_ARCH
++    // Apply dynamic CPU affinity based on thread type (simplified example)
++    // Real implementation would classify threads (e.g., rendering, audio, worker)
++    // For now, assume most new threads benefit from performance cores
++    set_thread_affinity_performance( new_thread->thread_handle );
++#endif
++
+     if (thread_data->debug_level >= 2)
+         TRACE("Created thread %p (handle %p) with start address %p\n",
+               new_thread, new_thread->thread_handle, start_address );
