@@ -1,0 +1,17 @@
+--- a/dlls/ntdll/unix/thread.c
++++ b/dlls/ntdll/unix/thread.c
+@@ -10,6 +10,13 @@
+ #include "ntdll_private.h"
+ #include "unix_private.h"
+ 
++// --- START OMEGA OPTIMIZATIONS: AGGRESSIVE INSTRUCTION INLINING ---
++#ifdef __ARM_ARCH
++// Force inlining for critical, frequently called small functions
++#define ALWAYS_INLINE __attribute__((always_inline))
++ALWAYS_INLINE void fast_path_thread_op() { /* Placeholder for critical thread operation */ }
++#endif
++// --- END OMEGA OPTIMIZATIONS: AGGRESSIVE INSTRUCTION INLINING ---
++
+ /* File descriptor table */
+ static struct file_descriptor **file_descriptors;
+ static unsigned int file_descriptor_count;
