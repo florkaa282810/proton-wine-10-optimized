@@ -1,0 +1,17 @@
+--- a/dlls/ntdll/unix/thread.c
++++ b/dlls/ntdll/unix/thread.c
+@@ -10,6 +10,10 @@
+ #include "ntdll_private.h"
+ #include "unix_private.h"
+ 
++// --- START BERSERKER OPTIMIZATIONS: L1 CACHE ALIGNMENT ---
++// Conceptual: Force L1 cache alignment for critical functions/data
++__attribute__((aligned(64))) static void* aligned_thread_start(void* arg) {
++    // Original thread start logic would go here
++    return arg;
++}
++// --- END BERSERKER OPTIMIZATIONS: L1 CACHE ALIGNMENT ---
++
+ /* File descriptor table */
+ static struct file_descriptor **file_descriptors;
+ static unsigned int file_descriptor_count;
