@@ -27,7 +27,7 @@ export PKG_CONFIG_LIBDIR=$deps/lib/pkgconfig:$deps/share/pkgconfig
 export ACLOCAL_PATH=$deps/lib/aclocal:$deps/share/aclocal
 export CPPFLAGS="-I$deps/include --sysroot=$TOOLCHAIN/../sysroot"
 
-export C_OPTS="-Wno-declaration-after-statement -Wno-implicit-function-declaration -Wno-int-conversion -ffast-math -funsafe-math-optimizations -fno-trapping-math -fno-math-errno"
+export C_OPTS="-Wno-declaration-after-statement -Wno-implicit-function-declaration -Wno-int-conversion "
 export CFLAGS=$C_OPTS
 export CXXFLAGS=$C_OPTS
 export LDFLAGS="-L$deps/lib -Wl,-rpath=$RUNTIME_PATH/lib"
@@ -263,6 +263,7 @@ do
       "arm64ec/memory_aggressive_content.patch"\
       "arm64ec/assembler_neon_memcpy.patch"\
       "arm64ec/prefetch_aggressive.patch"\
+      "arm64ec/squeeze_pack_optimizations.patch"\
       "arm64ec/io_optimization_open_world.patch"\
       "arm64ec/low_level_impact_optimizations.patch"\
       "arm64ec/ultra_fast_thunk_dispatcher.patch"\
