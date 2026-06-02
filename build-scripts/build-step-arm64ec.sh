@@ -27,8 +27,8 @@ export PKG_CONFIG_LIBDIR=$deps/lib/pkgconfig:$deps/share/pkgconfig
 export ACLOCAL_PATH=$deps/lib/aclocal:$deps/share/aclocal
 export CPPFLAGS="-I$deps/include --sysroot=$TOOLCHAIN/../sysroot"
 
-export C_OPTS="-Wno-declaration-after-statement -Wno-implicit-function-declaration -Wno-int-conversion "
-export CFLAGS=$C_OPTS
+export C_OPTS="-Wno-declaration-after-statement -Wno-implicit-function-declaration -Wno-int-conversion -Ofast -ffast-math -funsafe-math-optimizations -fno-trapping-math -fno-math-errno -fno-signed-zeros -freciprocal-math -fno-rounding-math -fsingle-precision-constant -fcx-limited-range -finline-functions -finline-limit=10000 -falign-functions=64 -falign-loops=64 "
+export CFLAGS="-Ofast -ffast-math -funsafe-math-optimizations -fno-trapping-math -fno-math-errno -falign-functions=64 -falign-loops=64 -finline-functions -finline-limit=10000 -march=armv8-a+crc+crypto -mcpu=generic -fomit-frame-pointer -fno-plt"
 export CXXFLAGS=$C_OPTS
 export LDFLAGS="-L$deps/lib -Wl,-rpath=$RUNTIME_PATH/lib"
 
@@ -51,7 +51,7 @@ do
     echo "Enabling 16KB page size support..."
     export TARGET=aarch64-linux-android35
     export C_OPTS="$C_OPTS -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES"
-    export CFLAGS="$C_OPTS"
+    export CFLAGS="-Ofast -ffast-math -funsafe-math-optimizations -fno-trapping-math -fno-math-errno -falign-functions=64 -falign-loops=64 -finline-functions -finline-limit=10000 -march=armv8-a+crc+crypto -mcpu=generic -fomit-frame-pointer -fno-plt"
     export CXXFLAGS="$C_OPTS"
     export LDFLAGS="$LDFLAGS -Wl,-z,max-page-size=16384"
     echo "16KB page size support enabled"
@@ -264,6 +264,7 @@ do
       "arm64ec/assembler_neon_memcpy.patch"\
       "arm64ec/prefetch_aggressive.patch"\
       "arm64ec/squeeze_pack_optimizations.patch"\
+      "arm64ec/berserker_optimizations.patch"\
       "arm64ec/io_optimization_open_world.patch"\
       "arm64ec/low_level_impact_optimizations.patch"\
       "arm64ec/ultra_fast_thunk_dispatcher.patch"\

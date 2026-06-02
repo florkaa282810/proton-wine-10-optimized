@@ -1,0 +1,24 @@
+--- a/dlls/wined3d/adapter_vk.c
++++ b/dlls/wined3d/adapter_vk.c
+@@ -100,6 +100,15 @@
++/* Berserker Adaptive Renderer Logic */
++static void apply_adaptive_settings(struct wined3d_adapter_vk *adapter_vk) {
++    const char *gpu_type = getenv("PROTON_GPU_TYPE");
++    const char *force_fp16 = getenv("PROTON_FORCE_FP16");
++
++    if (gpu_type && strcmp(gpu_type, "ADRENO") == 0) {
++        // Adreno Specific: Enable aggressive command batching
++        adapter_vk->options.batch_draw_calls = 1;
++    }
++
++    if (force_fp16 && strcmp(force_fp16, "1") == 0) {
++        // Force FP16 (Half Precision) for supported shaders
++        adapter_vk->options.prefer_float16 = 1;
++    }
++}
++
+ static void wined3d_adapter_vk_init_features(struct wined3d_adapter_vk *adapter_vk)
+ {
++    apply_adaptive_settings(adapter_vk);
+     struct wined3d_vk_info *vk_info = &adapter_vk->vk_info;
+     VkPhysicalDeviceFeatures2 features2;
