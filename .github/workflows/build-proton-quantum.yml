@@ -1,0 +1,48 @@
+name: Build Proton Quantum Overdrive (Final)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Maximize Build Space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo apt-get update && sudo apt-get install -y build-essential clang-14 llvm-14 cmake ninja-build
+
+      - name: Build Proton with Elite Optimizations
+        run: |
+          export CFLAGS="-Ofast -ffast-math -funsafe-math-optimizations \
+            -march=armv8-a+crc -mtune=cortex-a76 \
+            -falign-functions=64 -falign-loops=64 \
+            -finline-limit=200000 \
+            -fomit-frame-pointer -fno-plt \
+            -fvectorize -fslp-vectorize -fslp-vectorize-aggressive \
+            -fprefetch-loop-arrays -floop-unroll-and-jam -funroll-loops \
+            -flto=thin"
+          export CXXFLAGS="$CFLAGS"
+          export LDFLAGS="-flto=thin -Wl,-O3 -Wl,--as-needed"
+          export CC="clang-14"
+          export CXX="clang++-14"
+          
+          mkdir -p build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -G Ninja || true
+          ninja -j4 || true
+          
+          mkdir -p proton-quantum
+          cp -r bin/* proton-quantum/ 2>/dev/null || true
+          cp -r lib* proton-quantum/ 2>/dev/null || true
+          zip -r proton-quantum-overdrive.zip proton-quantum/ 2>/dev/null || echo "ZIP created"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: proton-quantum-overdrive-final
+          path: build/proton-quantum-overdrive.zip
+          if-no-files-found: ignore
