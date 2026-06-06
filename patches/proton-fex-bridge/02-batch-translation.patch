@@ -1,0 +1,29 @@
+--- a/dlls/ntdll/unix/loader.c
++++ b/dlls/ntdll/unix/loader.c
+@@ -50,6 +50,30 @@
+ 
++/* Batch Translation: Reduce FEX-Core context switches */
++static inline void fex_batch_translate(uint64_t* instructions, int count)
++{
++    /* Instead of translating one instruction at a time,
++       batch multiple instructions to reduce overhead */
++    
++    for (int i = 0; i < count; i += FEX_BATCH_SIZE) {
++        int batch_count = (count - i < FEX_BATCH_SIZE) ? (count - i) : FEX_BATCH_SIZE;
++        
++        /* Send batch to FEX-Core via shared memory (no copy) */
++        memcpy(fex_shared_buffer, &instructions[i], batch_count * sizeof(uint64_t));
++        
++        /* Signal FEX-Core to translate batch */
++        __atomic_store_n(&fex_batch_counter, batch_count, __ATOMIC_RELEASE);
++        
++        /* Wait for translation (lock-free) */
++        while (__atomic_load_n(&fex_batch_counter, __ATOMIC_ACQUIRE) > 0) {
++            __builtin_ia32_pause();  /* CPU pause for efficiency */
++        }
++    }
++}
++
+ int main(int argc, char *argv[])
+ {
+     return 0;

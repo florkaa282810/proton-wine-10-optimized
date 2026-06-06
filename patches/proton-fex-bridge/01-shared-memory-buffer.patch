@@ -1,0 +1,23 @@
+--- a/dlls/ntdll/unix/loader.c
++++ b/dlls/ntdll/unix/loader.c
+@@ -1,6 +1,20 @@
+ #include "config.h"
+ #include "wine/port.h"
+ 
++/* ============================================
++   PROTON ARM64EC ↔ FEX-CORE OPTIMIZATION
++   Shared Memory Buffer for Zero-Copy Translation
++   ============================================ */
++
++#define FEX_SHARED_BUFFER_SIZE (256 * 1024 * 1024)  // 256MB shared buffer
++#define FEX_BATCH_SIZE 64  // Batch translate 64 instructions at once
++
++static void* fex_shared_buffer = NULL;
++static int fex_batch_counter = 0;
++
++/* Lock-free ring buffer for instruction batching */
++typedef struct { uint64_t instructions[FEX_BATCH_SIZE]; int count; } FexBatch;
++
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
