@@ -1,0 +1,41 @@
+/* ============================================
+   AGGRESSIVE COMPILER FLAGS FOR BRIDGE
+   Maximum performance for FEX-Proton communication
+   ============================================ */
+
+/* CMake additions */
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} \
+    -DENABLE_ZERO_COPY_MMAP=1 \
+    -DENABLE_LOCKFREE_QUEUE=1 \
+    -DENABLE_SYSCALL_BATCHING=1 \
+    -DENABLE_PREFETCH=1 \
+    -march=armv8-a+crc+simd \
+    -mtune=cortex-a76 \
+    -O3 \
+    -fno-semantic-interposition \
+    -fno-plt \
+    -fomit-frame-pointer \
+    -finline-limit=500000 \
+    -funroll-loops \
+    -fprefetch-loop-arrays")
+
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} \
+    -DENABLE_ZERO_COPY_MMAP=1 \
+    -DENABLE_LOCKFREE_QUEUE=1 \
+    -DENABLE_SYSCALL_BATCHING=1 \
+    -DENABLE_PREFETCH=1 \
+    -march=armv8-a+crc+simd \
+    -mtune=cortex-a76 \
+    -O3 \
+    -fno-semantic-interposition \
+    -fno-plt \
+    -fomit-frame-pointer \
+    -finline-limit=500000 \
+    -funroll-loops \
+    -fprefetch-loop-arrays")
+
+/* Linker optimization */
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} \
+    -Wl,-O3 \
+    -Wl,--as-needed \
+    -Wl,--gc-sections")

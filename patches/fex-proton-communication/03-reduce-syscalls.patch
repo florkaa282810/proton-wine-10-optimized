@@ -1,0 +1,59 @@
+/* ============================================
+   REDUCE SYSCALL OVERHEAD
+   Batch syscalls and use eventfd for signaling
+   ============================================ */
+
+#include <sys/eventfd.h>
+
+static int fex_eventfd = -1;
+
+void fex_init_eventfd(void) {
+    /* Use eventfd for efficient signaling instead of futex */
+    fex_eventfd = eventfd(0, EFD_SEMAPHORE | EFD_CLOEXEC);
+}
+
+/* Signal FEX-Core without syscall overhead */
+static inline void fex_signal_batch_ready(int batch_size) {
+    if (fex_eventfd >= 0) {
+        uint64_t val = batch_size;
+        write(fex_eventfd, &val, sizeof(val));
+    }
+}
+
+/* Wait for FEX-Core batch completion */
+static inline int fex_wait_batch_done(void) {
+    if (fex_eventfd >= 0) {
+        uint64_t val;
+        read(fex_eventfd, &val, sizeof(val));
+        return val;
+    }
+    return 0;
+}
+
+/* Batch multiple syscalls into one */
+#define FEX_SYSCALL_BATCH_SIZE 32
+
+typedef struct {
+    uint64_t syscalls[FEX_SYSCALL_BATCH_SIZE];
+    int count;
+} SyscallBatch;
+
+static SyscallBatch pending_syscalls = {0};
+
+void fex_batch_syscall(uint64_t syscall_num) {
+    if (pending_syscalls.count < FEX_SYSCALL_BATCH_SIZE) {
+        pending_syscalls.syscalls[pending_syscalls.count++] = syscall_num;
+    }
+    
+    if (pending_syscalls.count >= FEX_SYSCALL_BATCH_SIZE) {
+        fex_flush_syscall_batch();
+    }
+}
+
+void fex_flush_syscall_batch(void) {
+    /* Send all batched syscalls to FEX at once */
+    if (pending_syscalls.count > 0) {
+        fex_signal_batch_ready(pending_syscalls.count);
+        pending_syscalls.count = 0;
+    }
+}

@@ -1,0 +1,36 @@
+/* ============================================
+   INTELLIGENT PREFETCHING & CACHE WARMING
+   Pre-load hot code paths before execution
+   ============================================ */
+
+#include <string.h>
+
+#define PREFETCH_DISTANCE 256  /* Prefetch 256 bytes ahead */
+
+/* Prefetch instruction stream from FEX */
+static inline void fex_prefetch_instructions(uint64_t* addr, int count) {
+    for (int i = 0; i < count; i += 8) {
+        __builtin_prefetch(&addr[i], 0, 3);  /* Prefetch for read, high locality */
+    }
+}
+
+/* Warm up L1/L2 cache with hot code paths */
+void fex_warmup_cache(void) {
+    /* Pre-allocate and touch cache lines for frequently used code */
+    static char cache_line[64] __attribute__((aligned(64)));
+    
+    for (int i = 0; i < 1024; i++) {
+        memset(cache_line, 0, 64);
+        __builtin_prefetch(cache_line, 1, 3);
+    }
+}
+
+/* Speculative prefetch based on branch prediction */
+static inline void fex_speculative_prefetch(uint64_t next_instr_addr) {
+    /* Prefetch the next likely instruction */
+    __builtin_prefetch((void*)next_instr_addr, 0, 2);
+    
+    /* Also prefetch +1 and +2 offsets for sequential code */
+    __builtin_prefetch((void*)(next_instr_addr + 64), 0, 1);
+    __builtin_prefetch((void*)(next_instr_addr + 128), 0, 1);
+}

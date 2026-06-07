@@ -1,0 +1,37 @@
+/* ============================================
+   LOCK-FREE QUEUE FOR INSTRUCTION DISPATCH
+   Eliminate mutex overhead between FEX and Proton
+   ============================================ */
+
+typedef struct {
+    uint64_t head;
+    uint64_t tail;
+    uint64_t buffer[65536];
+} LockFreeQueue;
+
+/* Enqueue instruction without locks */
+static inline int lfq_enqueue(LockFreeQueue* q, uint64_t value) {
+    uint64_t head = __atomic_load_n(&q->head, __ATOMIC_ACQUIRE);
+    uint64_t next_head = (head + 1) % 65536;
+    
+    if (next_head == __atomic_load_n(&q->tail, __ATOMIC_ACQUIRE)) {
+        return -1;  /* Queue full */
+    }
+    
+    q->buffer[head] = value;
+    __atomic_store_n(&q->head, next_head, __ATOMIC_RELEASE);
+    return 0;
+}
+
+/* Dequeue instruction without locks */
+static inline int lfq_dequeue(LockFreeQueue* q, uint64_t* value) {
+    uint64_t tail = __atomic_load_n(&q->tail, __ATOMIC_ACQUIRE);
+    
+    if (tail == __atomic_load_n(&q->head, __ATOMIC_ACQUIRE)) {
+        return -1;  /* Queue empty */
+    }
+    
+    *value = q->buffer[tail];
+    __atomic_store_n(&q->tail, (tail + 1) % 65536, __ATOMIC_RELEASE);
+    return 0;
+}

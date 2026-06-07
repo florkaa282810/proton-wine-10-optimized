@@ -1,0 +1,49 @@
+/* ============================================
+   ZERO-COPY MEMORY MAPPING
+   FEX-Core ↔ Proton ARM64EC Direct Access
+   ============================================ */
+
+#define FEX_MMAP_SIZE (512 * 1024 * 1024)  // 512MB shared region
+#define FEX_RING_BUFFER_ENTRIES 16384
+
+typedef struct {
+    volatile uint64_t write_ptr;
+    volatile uint64_t read_ptr;
+    uint64_t instructions[FEX_RING_BUFFER_ENTRIES];
+} FexRingBuffer;
+
+/* Allocate shared memory region between FEX and Proton */
+static FexRingBuffer* fex_ring = NULL;
+
+void fex_init_zero_copy(void) {
+    /* Create anonymous mmap for zero-copy communication */
+    fex_ring = (FexRingBuffer*)mmap(NULL, sizeof(FexRingBuffer),
+        PROT_READ | PROT_WRITE,
+        MAP_ANONYMOUS | MAP_SHARED, -1, 0);
+    
+    if (fex_ring == MAP_FAILED) {
+        perror("Failed to create FEX ring buffer");
+        return;
+    }
+    
+    fex_ring->write_ptr = 0;
+    fex_ring->read_ptr = 0;
+    
+    /* Use huge pages if available for better performance */
+    madvise(fex_ring, sizeof(FexRingBuffer), MADV_HUGEPAGE);
+}
+
+/* Direct write to FEX without copying */
+static inline void fex_write_instruction(uint64_t instr) {
+    uint64_t wp = fex_ring->write_ptr;
+    fex_ring->instructions[wp % FEX_RING_BUFFER_ENTRIES] = instr;
+    __atomic_store_n(&fex_ring->write_ptr, wp + 1, __ATOMIC_RELEASE);
+}
+
+/* Direct read from FEX without copying */
+static inline uint64_t fex_read_result(void) {
+    uint64_t rp = fex_ring->read_ptr;
+    uint64_t result = fex_ring->instructions[rp % FEX_RING_BUFFER_ENTRIES];
+    __atomic_store_n(&fex_ring->read_ptr, rp + 1, __ATOMIC_RELEASE);
+    return result;
+}
