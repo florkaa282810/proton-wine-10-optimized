@@ -82,6 +82,13 @@ static const char *debugstr_timeout( const LARGE_INTEGER *timeout )
 /* return a monotonic time counter, in Win32 ticks */
 static inline ULONGLONG monotonic_counter(void)
 {
+#if defined(__aarch64__)
+    /* Use ARM Generic Timer (CNTVCT_EL0) for ultra-fast, high-precision timing */
+    uint64_t vct, freq;
+    __asm__ __volatile__( "mrs %0, cntvct_el0" : "=r" (vct) );
+    __asm__ __volatile__( "mrs %0, cntfrq_el0" : "=r" (freq) );
+    return (vct * 10000000) / freq;
+#else
     struct timeval now;
 #ifdef __APPLE__
     static mach_timebase_info_data_t timebase;
@@ -99,6 +106,7 @@ static inline ULONGLONG monotonic_counter(void)
 #endif
     gettimeofday( &now, 0 );
     return ticks_from_time_t( now.tv_sec ) + now.tv_usec * 10 - server_start_time;
+#endif
 }
 
 #ifdef __linux__
@@ -127,6 +135,23 @@ static inline int futex_wake_one( const LONG *addr )
 {
     return syscall( __NR_futex, addr, FUTEX_WAKE_PRIVATE, 1, NULL, 0, 0 );
 }
+
+#if defined(__aarch64__)
+/* Optimized SRW lock fast-path for ARM64 */
+NTSTATUS arm64_srw_lock_acquire_exclusive( RTL_SRWLOCK *lock )
+{
+    void *old;
+    __asm__ __volatile__(
+        "1: ldar %0, [%1]\n"
+        "   cbnz %0, 2f\n"
+        "   stlr %2, [%1]\n"
+        "   cbnz %2, 1b\n"
+        "   mov %0, #0\n"
+        "2:"
+        : "=&r" (old) : "r" (&lock->Ptr), "r" ((void*)1) : "memory" );
+    return old ? STATUS_PENDING : STATUS_SUCCESS;
+}
+#endif
 
 #elif defined(__APPLE__)
 

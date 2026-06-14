@@ -68,11 +68,36 @@ static inline WCHAR to_lower( WCHAR ch )
     return ch + casemap[casemap[casemap[ch >> 8] + ((ch >> 4) & 0x0f)] + (ch & 0x0f)];
 }
 
+#if defined(__aarch64__)
+#include <arm_neon.h>
+#endif
+
 int memicmp_strW( const WCHAR *str1, const WCHAR *str2, data_size_t len )
 {
     int ret = 0;
+    len /= sizeof(WCHAR);
 
-    for (len /= sizeof(WCHAR); len; str1++, str2++, len--)
+#if defined(__aarch64__)
+    /* NEON optimization for ASCII-heavy strings (common in Windows paths) */
+    while (len >= 8)
+    {
+        uint16x8_t v1 = vld1q_u16(str1);
+        uint16x8_t v2 = vld1q_u16(str2);
+        
+        /* Check if they are identical first (fast path) */
+        uint16x8_t diff = veorq_u16(v1, v2);
+        uint64_t high = vgetq_lane_u64(vreinterpretq_u64_u16(diff), 1);
+        uint64_t low = vgetq_lane_u64(vreinterpretq_u64_u16(diff), 0);
+        
+        if (high || low) break; /* Fallback to slow path for case-insensitive check */
+        
+        str1 += 8;
+        str2 += 8;
+        len -= 8;
+    }
+#endif
+
+    for (; len; str1++, str2++, len--)
         if ((ret = to_lower(*str1) - to_lower(*str2))) break;
     return ret;
 }
