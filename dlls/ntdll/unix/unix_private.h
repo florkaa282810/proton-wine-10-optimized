@@ -114,6 +114,8 @@ struct ntdll_thread_data
     PRTL_THREAD_START_ROUTINE start;  /* thread entry point */
     void              *param;         /* thread entry point parameter */
     void              *jmp_buf;       /* setjmp buffer for exception handling */
+    HANDLE             mru_handle;    /* MRU handle cache */
+    void              *mru_object;    /* MRU object cache */
 };
 
 C_ASSERT( sizeof(struct ntdll_thread_data) <= sizeof(((TEB *)0)->GdiTebBatch) );

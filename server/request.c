@@ -295,6 +295,10 @@ static void call_req_handler( struct thread *thread )
     union generic_reply reply;
     enum request req = thread->req.request_header.req;
 
+#if defined(__aarch64__)
+    __asm__ __volatile__( "prfm pldl1keep, [%0]" : : "r" (thread->req_data) );
+#endif
+
     current = thread;
     current->reply_size = 0;
     clear_error();

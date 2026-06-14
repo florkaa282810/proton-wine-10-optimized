@@ -189,12 +189,18 @@ static struct esync *add_to_list( HANDLE handle, enum esync_type type, int fd, v
 
 static struct esync *get_cached_object( HANDLE handle )
 {
-    UINT_PTR entry, idx = handle_to_index( handle, &entry );
+    struct ntdll_thread_data *data = ntdll_get_thread_data();
+    UINT_PTR entry, idx;
 
+    if (handle == data->mru_handle) return data->mru_object;
+
+    idx = handle_to_index( handle, &entry );
     if (entry >= ESYNC_LIST_ENTRIES || !esync_list[entry]) return NULL;
     if (!esync_list[entry][idx].type) return NULL;
 
-    return &esync_list[entry][idx];
+    data->mru_handle = handle;
+    data->mru_object = &esync_list[entry][idx];
+    return data->mru_object;
 }
 
 /* Gets an object. This is either a proper esync object (i.e. an event,
