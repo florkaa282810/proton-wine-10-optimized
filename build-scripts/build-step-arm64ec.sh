@@ -8,13 +8,13 @@ export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-Wl,-O3 -Wl,--as-needed -Wl,--sort-common -Wl,--hash-style=gnu -Wl,-z,relro -Wl,-z,now -s"
 
 # Injeção de Patches de Elite + Quantum
-echo "Injetando Patches Quantum Overdrive..."
-patch -p1 < android/patches/arm64ec/berserker_optimizations.patch
-patch -p1 < android/patches/arm64ec/squeeze_pack_optimizations.patch
-patch -p1 < android/patches/arm64ec/io_optimization_open_world.patch
-patch -p1 < android/patches/arm64ec/thread_cpu_affinity.patch
-patch -p1 < android/patches/arm64ec/gpu_pipeline_optimization.patch
-patch -p1 < android/patches/arm64ec/virtual_memory_optimization_new.patch
+echo "Pulando Patches Quantum Overdrive (Substituídos por otimizações nativas no código fonte)..."
+# patch -p1 < android/patches/arm64ec/berserker_optimizations.patch
+# patch -p1 < android/patches/arm64ec/squeeze_pack_optimizations.patch
+# patch -p1 < android/patches/arm64ec/io_optimization_open_world.patch
+# patch -p1 < android/patches/arm64ec/thread_cpu_affinity.patch
+# patch -p1 < android/patches/arm64ec/gpu_pipeline_optimization.patch
+# patch -p1 < android/patches/arm64ec/virtual_memory_optimization_new.patch
 
 # Otimização Extra de Memória Lock-Free
 sed -i 's/pthread_mutex_lock/ /g' dlls/ntdll/unix/virtual.c || true
