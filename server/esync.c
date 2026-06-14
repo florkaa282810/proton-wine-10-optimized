@@ -387,8 +387,10 @@ void esync_clear( int fd )
 
 static inline void small_pause(void)
 {
-#ifdef __i386__
+#if defined(__i386__) || defined(__x86_64__)
     __asm__ __volatile__( "rep;nop" : : : "memory" );
+#elif defined(__aarch64__)
+    __asm__ __volatile__( "yield" : : : "memory" );
 #else
     __asm__ __volatile__( "" : : : "memory" );
 #endif
@@ -409,8 +411,12 @@ void esync_set_event( struct esync *esync )
     if (esync->type == ESYNC_MANUAL_EVENT)
     {
         /* Acquire the spinlock. */
+        int spins = 0;
         while (__sync_val_compare_and_swap( &event->locked, 0, 1 ))
-            small_pause();
+        {
+            if (spins++ < 100) small_pause();
+            else { usleep(0); spins = 0; }
+        }
     }
 
     if (!__atomic_exchange_n( &event->signaled, 1, __ATOMIC_SEQ_CST ))
@@ -440,8 +446,12 @@ void esync_reset_event( struct esync *esync )
     if (esync->type == ESYNC_MANUAL_EVENT)
     {
         /* Acquire the spinlock. */
+        int spins = 0;
         while (__sync_val_compare_and_swap( &event->locked, 0, 1 ))
-            small_pause();
+        {
+            if (spins++ < 100) small_pause();
+            else { usleep(0); spins = 0; }
+        }
     }
 
     /* Only bother signaling the fd if we weren't already signaled. */

@@ -457,8 +457,10 @@ NTSTATUS esync_open_event( HANDLE *handle, ACCESS_MASK access,
 
 static inline void small_pause(void)
 {
-#ifdef __i386__
+#if defined(__i386__) || defined(__x86_64__)
     __asm__ __volatile__( "rep;nop" : : : "memory" );
+#elif defined(__aarch64__)
+    __asm__ __volatile__( "yield" : : : "memory" );
 #else
     __asm__ __volatile__( "" : : : "memory" );
 #endif
@@ -531,8 +533,12 @@ NTSTATUS esync_set_event( HANDLE handle )
     if (obj->type == ESYNC_MANUAL_EVENT)
     {
         /* Acquire the spinlock. */
+        int spins = 0;
         while (InterlockedCompareExchange( (LONG *)&event->locked, 1, 0 ))
-            small_pause();
+        {
+            if (spins++ < 100) small_pause();
+            else { usleep(0); spins = 0; }
+        }
     }
 
     /* For manual-reset events, as long as we're in a lock, we can take the
@@ -577,8 +583,12 @@ NTSTATUS esync_reset_event( HANDLE handle )
     if (obj->type == ESYNC_MANUAL_EVENT)
     {
         /* Acquire the spinlock. */
+        int spins = 0;
         while (InterlockedCompareExchange( (LONG *)&event->locked, 1, 0 ))
-            small_pause();
+        {
+            if (spins++ < 100) small_pause();
+            else { usleep(0); spins = 0; }
+        }
     }
 
     /* For manual-reset events, as long as we're in a lock, we can take the
