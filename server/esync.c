@@ -32,7 +32,15 @@
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
+#include <sys/syscall.h>
 #include <unistd.h>
+
+#ifndef MFD_CLOEXEC
+#define MFD_CLOEXEC 0x0001U
+#endif
+#ifndef MFD_ALLOW_SEALING
+#define MFD_ALLOW_SEALING 0x0002U
+#endif
 
 #include "ntstatus.h"
 #define WIN32_NO_STATUS
@@ -75,21 +83,30 @@ static void shm_cleanup(void)
 
 void esync_init(void)
 {
-    struct stat st;
+    /* Android/Linux: Use memfd_create instead of shm_open for better stability and to avoid /dev/shm issues */
+#ifdef __NR_memfd_create
+    shm_fd = syscall(__NR_memfd_create, "wine-esync", MFD_CLOEXEC | MFD_ALLOW_SEALING);
+#else
+    shm_fd = -1;
+#endif
 
-    if (fstat( config_dir_fd, &st ) == -1)
-        fatal_error( "cannot stat config dir\n" );
-
-    if (st.st_ino != (unsigned long)st.st_ino)
-        sprintf( shm_name, "/wine-%lx%08lx-esync", (unsigned long)((unsigned long long)st.st_ino >> 32), (unsigned long)st.st_ino );
-    else
-        sprintf( shm_name, "/wine-%lx-esync", (unsigned long)st.st_ino );
-
-    shm_unlink( shm_name );
-
-    shm_fd = shm_open( shm_name, O_RDWR | O_CREAT | O_EXCL, 0644 );
     if (shm_fd == -1)
-        perror( "shm_open" );
+    {
+        struct stat st;
+        if (fstat( config_dir_fd, &st ) == -1)
+            fatal_error( "cannot stat config dir\n" );
+
+        if (st.st_ino != (unsigned long)st.st_ino)
+            sprintf( shm_name, "/wine-%lx%08lx-esync", (unsigned long)((unsigned long long)st.st_ino >> 32), (unsigned long)st.st_ino );
+        else
+            sprintf( shm_name, "/wine-%lx-esync", (unsigned long)st.st_ino );
+
+        shm_unlink( shm_name );
+        shm_fd = shm_open( shm_name, O_RDWR | O_CREAT | O_EXCL, 0644 );
+    }
+
+    if (shm_fd == -1)
+        perror( "shm_open/memfd_create" );
 
     pagesize = sysconf( _SC_PAGESIZE );
 

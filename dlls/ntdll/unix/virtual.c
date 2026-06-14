@@ -376,13 +376,30 @@ static inline BOOL is_vprot_exec_write( BYTE vprot )
 /* mmap() anonymous memory at a fixed address */
 void *anon_mmap_fixed( void *start, size_t size, int prot, int flags )
 {
-    return mmap( start, size, prot, MAP_PRIVATE | MAP_ANON | MAP_FIXED | flags, -1, 0 );
+    void *ret = mmap( start, size, prot, MAP_PRIVATE | MAP_ANON | MAP_FIXED | flags, -1, 0 );
+    if (ret != (void *)-1)
+    {
+#ifdef MADV_HUGEPAGE
+        madvise( ret, size, MADV_HUGEPAGE );
+#endif
+#ifdef MADV_WILLNEED
+        madvise( ret, size, MADV_WILLNEED );
+#endif
+    }
+    return ret;
 }
 
 /* allocate anonymous mmap() memory at any address */
 void *anon_mmap_alloc( size_t size, int prot )
 {
-    return mmap( NULL, size, prot, MAP_PRIVATE | MAP_ANON, -1, 0 );
+    void *ret = mmap( NULL, size, prot, MAP_PRIVATE | MAP_ANON, -1, 0 );
+    if (ret != (void *)-1)
+    {
+#ifdef MADV_HUGEPAGE
+        madvise( ret, size, MADV_HUGEPAGE );
+#endif
+    }
+    return ret;
 }
 
 static void kernel_writewatch_softdirty_init(void)

@@ -78,6 +78,29 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(ntdll);
 
+#ifdef linux
+static void get_android_meminfo(ULONGLONG *total, ULONGLONG *avail)
+{
+    FILE *f = fopen("/proc/meminfo", "r");
+    char line[128];
+    ULONGLONG mem_total = 0, mem_avail = 0, mem_free = 0, buffers = 0, cached = 0;
+
+    if (!f) return;
+    while (fgets(line, sizeof(line), f))
+    {
+        if (!strncmp(line, "MemTotal:", 9)) sscanf(line + 9, "%llu", &mem_total);
+        else if (!strncmp(line, "MemAvailable:", 13)) sscanf(line + 13, "%llu", &mem_avail);
+        else if (!strncmp(line, "MemFree:", 8)) sscanf(line + 8, "%llu", &mem_free);
+        else if (!strncmp(line, "Buffers:", 8)) sscanf(line + 8, "%llu", &buffers);
+        else if (!strncmp(line, "Cached:", 7)) sscanf(line + 7, "%llu", &cached);
+    }
+    fclose(f);
+
+    if (total) *total = mem_total * 1024;
+    if (avail) *avail = (mem_avail ? mem_avail : (mem_free + buffers + cached)) * 1024;
+}
+#endif
+
 #include "pshpack1.h"
 
 struct smbios_prologue
