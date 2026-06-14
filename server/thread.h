@@ -97,6 +97,8 @@ struct thread
     data_size_t            desc_len;      /* thread description length in bytes */
     WCHAR                 *desc;          /* thread description string */
     struct completion_wait *completion_wait; /* completion port wait object the thread is associated with */
+    obj_handle_t           mru_handle;    /* MRU handle cache */
+    struct object         *mru_object;    /* MRU object cache */
 };
 
 extern struct thread *current;

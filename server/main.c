@@ -217,17 +217,7 @@ static void sigterm_handler( int signum )
 
 int main( int argc, char *argv[] )
 {
-#if defined(__linux__) && defined(__aarch64__)
-    /* Snapdragon 870: 1x Prime (3.2GHz), 3x Gold (2.42GHz), 4x Silver (1.8GHz)
-     * We target the Prime core (7) and Gold cores (4-6) for the server. */
-    cpu_set_t cpuset;
-    CPU_ZERO(&cpuset);
-    CPU_SET(7, &cpuset); /* Prime core */
-    CPU_SET(6, &cpuset);
-    CPU_SET(5, &cpuset);
-    CPU_SET(4, &cpuset);
-    sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
-#endif
+
     setvbuf( stderr, NULL, _IOLBF, 0 );
     server_argv0 = argv[0];
     parse_options( argc, argv, "d::fhk::p::vw", long_options, option_callback );

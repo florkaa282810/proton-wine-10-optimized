@@ -79,21 +79,21 @@ struct semaphore
 {
     int max;
     int count;
-};
+} __attribute__((aligned(8)));
 C_ASSERT(sizeof(struct semaphore) == 8);
 
 struct mutex
 {
     DWORD tid;
     int count;    /* recursion count */
-};
+} __attribute__((aligned(8)));
 C_ASSERT(sizeof(struct mutex) == 8);
 
 struct event
 {
     int signaled;
     int locked;
-};
+} __attribute__((aligned(8)));
 C_ASSERT(sizeof(struct event) == 8);
 
 static char shm_name[29];
@@ -685,7 +685,7 @@ NTSTATUS esync_open_mutex( HANDLE *handle, ACCESS_MASK access,
     return open_esync( ESYNC_MUTEX, handle, access, attr );
 }
 
-NTSTATUS esync_release_mutex( HANDLE *handle, LONG *prev )
+NTSTATUS esync_release_mutex( HANDLE handle, LONG *prev )
 {
     struct esync *obj;
     struct mutex *mutex;
@@ -697,24 +697,22 @@ NTSTATUS esync_release_mutex( HANDLE *handle, LONG *prev )
     if ((ret = get_object( handle, &obj ))) return ret;
     mutex = obj->shm;
 
-    /* This is thread-safe, because the only thread that can change the tid to
-     * or from our tid is ours. */
     if (mutex->tid != GetCurrentThreadId()) return STATUS_MUTANT_NOT_OWNED;
 
     if (prev) *prev = mutex->count;
 
-    mutex->count--;
-
-    if (!mutex->count)
+    if (mutex->count > 1)
     {
-        /* This is also thread-safe, as long as signaling the file is the last
-         * thing we do. Other threads don't care about the tid if it isn't
-         * theirs. */
-        mutex->tid = 0;
-
-        if (write( obj->fd, &value, sizeof(value) ) == -1)
-            return errno_to_status( errno );
+        mutex->count--;
+        return STATUS_SUCCESS;
     }
+
+    /* Fast path: zero out tid and count before writing to fd */
+    mutex->count = 0;
+    mutex->tid = 0;
+
+    if (write( obj->fd, &value, sizeof(value) ) == -1)
+        return errno_to_status( errno );
 
     return STATUS_SUCCESS;
 }

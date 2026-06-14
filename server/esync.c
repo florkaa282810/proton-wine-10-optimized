@@ -226,21 +226,21 @@ struct semaphore
 {
     int max;
     int count;
-};
+} __attribute__((aligned(8)));
 C_ASSERT(sizeof(struct semaphore) == 8);
 
 struct mutex
 {
     DWORD tid;
     int count;    /* recursion count */
-};
+} __attribute__((aligned(8)));
 C_ASSERT(sizeof(struct mutex) == 8);
 
 struct event
 {
     int signaled;
     int locked;
-};
+} __attribute__((aligned(8)));
 C_ASSERT(sizeof(struct event) == 8);
 
 struct esync *create_esync( struct object *root, const struct unicode_str *name,

@@ -475,6 +475,17 @@ struct object *get_handle_obj( struct process *process, obj_handle_t handle,
     struct handle_entry *entry;
     struct object *obj;
 
+    if (current && process == current->process && handle == current->mru_handle)
+    {
+        obj = current->mru_object;
+        if (ops && (obj->ops != ops))
+        {
+            set_error( STATUS_OBJECT_TYPE_MISMATCH );
+            return NULL;
+        }
+        return grab_object( obj );
+    }
+
     if (!(obj = get_magic_handle( handle )))
     {
         if (!(entry = get_handle( process, handle )))
@@ -483,6 +494,11 @@ struct object *get_handle_obj( struct process *process, obj_handle_t handle,
             return NULL;
         }
         obj = entry->ptr;
+        if (current && process == current->process)
+        {
+            current->mru_handle = handle;
+            current->mru_object = obj;
+        }
         if (ops && (obj->ops != ops))
         {
             set_error( STATUS_OBJECT_TYPE_MISMATCH );  /* not the right type */
