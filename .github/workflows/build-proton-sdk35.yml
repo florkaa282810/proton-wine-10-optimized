@@ -57,8 +57,6 @@ jobs:
             libtool \
             pkg-config \
             mingw-w64 \
-            gcc-multilib \
-            g++-multilib \
             libfreetype6-dev \
             libfreetype6-dev:i386 \
             libpng-dev \
