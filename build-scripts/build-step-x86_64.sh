@@ -97,7 +97,7 @@ do
       --disable-amd_ags_x64 \
       --enable-wineandroid_drv=no \
       --disable-tests \
-      --with-alsa \
+      --without-alsa \
       --without-capi \
       --without-coreaudio \
       --without-cups \
@@ -123,10 +123,10 @@ do
       --without-pcsclite \
       --without-piper \
       --with-pthread \
-      --with-pulse \
+      --without-pulse \
       --without-sane \
       --with-sdl \
-      --without-udev \
+      --without-udev --without-vulkan \
       --without-unwind \
       --without-usb \
       --without-v4l2 \

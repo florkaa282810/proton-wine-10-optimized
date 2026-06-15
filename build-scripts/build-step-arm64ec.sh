@@ -52,7 +52,7 @@ do
       --without-x \
       --without-freetype \
       --disable-tests \
-      --without-vulkan \
+      --without-vulkan --without-pulse --without-alsa --without-udev \
       --with-sdl \
       --without-gstreamer \
       --without-oss \
@@ -71,62 +71,62 @@ do
 
     PATCHES=(
       # input patches
-      "dlls_winebus_sys_bus_sdl_c.patch"
+      "common/dlls_winebus_sys_bus_sdl_c.patch"
 
       # shm_utils
-      "dlls_ntdll_unix_esync_c.patch"
-      "dlls_ntdll_unix_fsync_c.patch"
-      "server_esync_c.patch"
-      "server_fsync_c.patch"
+      "common/dlls_ntdll_unix_esync_c.patch"
+      "common/dlls_ntdll_unix_fsync_c.patch"
+      "common/server_esync_c.patch"
+      "common/server_fsync_c.patch"
 
       # winex11
-      "dlls_winex11_drv_x11drv_h.patch"
-      "dlls_winex11_drv_bitblt_c.patch"
-      "dlls_winex11_drv_desktop_c.patch"
-      "dlls_winex11_drv_mouse_c.patch"
-      "dlls_winex11_drv_window_c.patch"
-      "dlls_winex11_drv_x11drv_main_c.patch"
+      "common/dlls_winex11_drv_x11drv_h.patch"
+      "common/dlls_winex11_drv_bitblt_c.patch"
+      "common/dlls_winex11_drv_desktop_c.patch"
+      "common/dlls_winex11_drv_mouse_c.patch"
+      "common/dlls_winex11_drv_window_c.patch"
+      "common/dlls_winex11_drv_x11drv_main_c.patch"
 
       # address space patches
-      "dlls_ntdll_unix_virtual_c.patch"
-      "loader_preloader_c.patch"
+      "arm64ec/dlls_ntdll_unix_virtual_c.patch"
+      "common/loader_preloader_c.patch"
 
       # syscall Patches
-      "dlls_ntdll_unix_signal_x86_64_c.patch"
+      "x86_64/dlls_ntdll_unix_signal_x86_64_c.patch"
 
       # pulse Patches
-      "dlls_winepulse_drv_pulse_c.patch"
+      "common/dlls_winepulse_drv_pulse_c.patch"
 
       # desktop patches
-      "programs_explorer_desktop_c.patch"
+      "common/programs_explorer_desktop_c.patch"
 
       # path patches
-      "dlls_ntdll_unix_server_c.patch"
+      "common/dlls_ntdll_unix_server_c.patch"
 
       # winlator patches
-      "dlls_amd_ags_x64_unixlib_c.patch"
-      "dlls_winex11_drv_opengl_c.patch"
+      "common/dlls_amd_ags_x64_unixlib_c.patch"
+      "common/dlls_winex11_drv_opengl_c.patch"
 
       # advapi32 patches
-      "dlls_advapi32_advapi_c.patch"
+      "common/dlls_advapi32_advapi_c.patch"
 
       # browser patches
-      "programs_winebrowser_makefile_in.patch"
-      "programs_winebrowser_main_c.patch"
+      "common/programs_winebrowser_makefile_in.patch"
+      "common/programs_winebrowser_main_c.patch"
 
       # clipboard patches
-      "dlls_user32_makefile_in.patch"
-      "dlls_user32_clipboard_c.patch"
-      "dlls_win32u_clipboard_c.patch"
+      "common/dlls_user32_makefile_in.patch"
+      "common/dlls_user32_clipboard_c.patch"
+      "common/dlls_win32u_clipboard_c.patch"
 
       # fexcore patch
-      "dlls_ntdll_loader_c.patch"
-      "dlls_ntdll_unix_loader_c.patch"
-      "dlls_wow64_syscall_c.patch"
-      "loader_wine_inf_in.patch"
+      "arm64ec/dlls_ntdll_loader_c.patch"
+      "arm64ec/dlls_ntdll_unix_loader_c.patch"
+      "arm64ec/dlls_wow64_syscall_c.patch"
+      "arm64ec/loader_wine_inf_in.patch"
 
-      "programs_wineboot_wineboot_c.patch"
-      "dlls_wdscore_wdscore_spec.patch"
+      "arm64ec/programs_wineboot_wineboot_c.patch"
+      "arm64ec/dlls_wdscore_wdscore_spec.patch"
     )
 
     for patch in "${PATCHES[@]}"; do
