@@ -33,6 +33,11 @@ do
   if [ "$arg" == "--configure" ]
   then
     echo "Configuring..."
+    # Set sysroot for NDK compiler
+    export CFLAGS="-O3 -march=armv8-a+crypto+fp16 -fomit-frame-pointer --sysroot=$HOME/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+    export CPPFLAGS="-I$HOME/termuxfs/aarch64/usr/include $CFLAGS"
+    export LDFLAGS="-L$HOME/termuxfs/aarch64/usr/lib -Wl,-rpath-link,$HOME/termuxfs/aarch64/usr/lib -lsysvshm"
+
     ./configure \
       --host=$arch_host \
       --target=$arch_host \
@@ -51,9 +56,9 @@ do
       CROSSCXX="$CROSSCXX" \
       CC="$CC" \
       CXX="$CXX" \
-      CFLAGS="-O3 -march=armv8-a+crypto+fp16 -fomit-frame-pointer" \
-      LDFLAGS="-L$HOME/termuxfs/aarch64/usr/lib -Wl,-rpath-link,$HOME/termuxfs/aarch64/usr/lib -lsysvshm" \
-      CPPFLAGS="-I$HOME/termuxfs/aarch64/usr/include"
+      CFLAGS="$CFLAGS" \
+      LDFLAGS="$LDFLAGS" \
+      CPPFLAGS="$CPPFLAGS"
 
     PATCHES=(
       # input patches
