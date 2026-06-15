@@ -19,7 +19,7 @@ export WINE_TOOLS="$GITHUB_WORKSPACE/wine-tools"
 export PATH="$NDK_BIN:$HOME/toolchains/llvm-mingw-20250920-ucrt-ubuntu-22.04-x86_64/bin:$PATH"
 
 # Android/Termux environment paths
-export DEPS_DIR="$HOME/termuxfs/aarch64/usr"
+export DEPS_DIR="$HOME/termuxfs/aarch64/data/data/com.termux/files/usr"
 export PKG_CONFIG_LIBDIR="$DEPS_DIR/lib/pkgconfig:$DEPS_DIR/share/pkgconfig"
 export ACLOCAL_PATH="$DEPS_DIR/lib/aclocal:$DEPS_DIR/share/aclocal"
 export CFLAGS="-O3 -march=armv8-a+crypto+fp16 -fomit-frame-pointer --sysroot=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
