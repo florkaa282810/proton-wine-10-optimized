@@ -28,29 +28,23 @@
 
 #define IS_EMPTY(pkt) (!(pkt)->data && !(pkt)->side_data_elems)
 
-struct AVBSFInternal {
-    AVPacket *buffer_pkt;
-    int eof;
-};
-
 /* From FFmpeg */
 int ff_bsf_get_packet(AVBSFContext *ctx, AVPacket **pkt)
 {
-    AVBSFInternal *bsfi = ctx->internal;
     AVPacket *tmp_pkt;
 
-    if (bsfi->eof)
+    if (ctx->internal->eof)
         return AVERROR_EOF;
 
-    if (IS_EMPTY(bsfi->buffer_pkt))
+    if (IS_EMPTY(ctx->internal->buffer_pkt))
         return AVERROR(EAGAIN);
 
     tmp_pkt = av_packet_alloc();
     if (!tmp_pkt)
         return AVERROR(ENOMEM);
 
-    *pkt = bsfi->buffer_pkt;
-    bsfi->buffer_pkt = tmp_pkt;
+    *pkt = ctx->internal->buffer_pkt;
+    ctx->internal->buffer_pkt = tmp_pkt;
 
     return 0;
 }
@@ -77,7 +71,7 @@ static enum AVCodecID reverse_codec_id(enum AVCodecID codec_id)
 
 static int init(AVBSFContext *ctx)
 {
-    if (ctx->par_in->channels <= 0 || ctx->par_in->sample_rate <= 0)
+    if (ctx->par_in->ch_layout.nb_channels <= 0 || ctx->par_in->sample_rate <= 0)
         return AVERROR(EINVAL);
     if (ctx->par_in->bits_per_coded_sample % 8u)
         return AVERROR(EINVAL);
@@ -149,9 +143,11 @@ static const enum AVCodecID codec_ids[] = {
 
 const AVBitStreamFilter ff_pcm_byte_order_reverse_bsf = {
     .name           = "pcm_byte_order_reverse",
-    .filter         = byte_order_reverse_filter,
-    .init           = init,
+    .priv_class_next = NULL,
     .codec_ids      = codec_ids,
+    .priv_data_size = 0,
+    .init           = init,
+    .filter         = byte_order_reverse_filter,
 };
 
 #endif /* HAVE_FFMPEG */
