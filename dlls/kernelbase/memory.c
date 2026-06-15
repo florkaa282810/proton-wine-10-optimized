@@ -149,8 +149,8 @@ BOOL WINAPI __attribute__((naked)) FlushInstructionCache( HANDLE process, LPCVOI
 {
     asm( ".seh_proc \"#FlushInstructionCache\"\n\t"
          "stp x29, x30, [sp, #-32]!\n\t"
-         "str x1, [sp, #16]\n\t"
          ".seh_save_fplr_x 32\n\t"
+         "str x1, [sp, #16]\n\t"
          ".seh_endprologue\n\t"
          "bl \"#flush_instruction_cache\"\n\t"
          "ldr x1, [sp, #16]\n\t"

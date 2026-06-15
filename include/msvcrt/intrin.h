@@ -7,7 +7,7 @@
 #ifndef _INC_INTRIN
 #define _INC_INTRIN
 
-#if defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__) && !defined(__arm64ec__))
+#if defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__))
 # include <x86intrin.h>
 #endif
 
@@ -19,7 +19,7 @@ extern "C" {
 # define __has_builtin(x) 0
 #endif
 
-#if defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__) && !defined(__arm64ec__))
+#if defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__))
 
 #if __has_builtin(__cpuidex) || (defined(_MSC_VER) && !defined(__clang__))
 void __cpuidex(int info[4], int ax, int cx);
