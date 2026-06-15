@@ -356,7 +356,7 @@ __ASM_GLOBAL_FUNC(call_dll_entry_point,
                   __ASM_CFI(".cfi_def_cfa %esp,4\n\t")
                   __ASM_CFI(".cfi_same_value %ebp\n\t")
                   "ret" )
-#elif defined(__x86_64__) && !defined(__arm64ec__)
+#elif defined(__x86_64__) && !defined(__arm64ec__) && !defined(__arm64ec__)
 extern BOOL CDECL call_dll_entry_point( DLLENTRYPROC proc, void *module, UINT reason, void *reserved );
 /* Some apps modify rbx in TLS entry point. */
 __ASM_GLOBAL_FUNC(call_dll_entry_point,
@@ -388,7 +388,7 @@ static inline BOOL call_dll_entry_point( DLLENTRYPROC proc, void *module,
 #endif
 
 
-#if defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__) || defined(__arm__) || defined(__aarch64__)
 /*************************************************************************
  *		stub_entry_point
  *

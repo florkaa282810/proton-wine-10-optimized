@@ -4698,7 +4698,7 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID reserved )
     {
     case DLL_PROCESS_ATTACH:
         DisableThreadLibraryCalls( inst );
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
         handler = RtlAddVectoredExceptionHandler( TRUE, vectored_handler );
 #endif
         KeQueryTickCount( &count );  /* initialize the global KeTickCount */

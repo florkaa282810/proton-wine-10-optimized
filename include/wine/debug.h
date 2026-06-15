@@ -124,7 +124,7 @@ extern DECLSPEC_EXPORT unsigned int WINAPI __wine_dbg_ftrace( char *str, unsigne
    quotes.  The string will be valid for some time, but not indefinitely
    as strings are re-used.  */
 
-#if defined(__x86_64__) && defined(__GNUC__) && defined(__WINE_USE_MSVCRT)
+#if defined(__x86_64__) && !defined(__arm64ec__) && defined(__GNUC__) && defined(__WINE_USE_MSVCRT)
 # define __wine_dbg_cdecl __cdecl
 #else
 # define __wine_dbg_cdecl

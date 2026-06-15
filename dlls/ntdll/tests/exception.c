@@ -111,7 +111,7 @@ typedef struct _RTL_UNLOAD_EVENT_TRACE
 static RTL_UNLOAD_EVENT_TRACE *(WINAPI *pRtlGetUnloadEventTrace)(void);
 static void (WINAPI *pRtlGetUnloadEventTraceEx)(ULONG **element_size, ULONG **element_count, void **event_trace);
 
-#if defined(__x86_64__)
+#if defined(__x86_64__) && !defined(__arm64ec__)
 
 typedef union _UNWIND_CODE
 {
@@ -187,7 +187,7 @@ static void CALLBACK apc_func( ULONG_PTR arg1, ULONG_PTR arg2, ULONG_PTR arg3 )
     apc_count++;
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 static void test_debugger_xstate(HANDLE thread, CONTEXT *ctx, enum debugger_stages stage)
 {
     char context_buffer[sizeof(CONTEXT) + sizeof(CONTEXT_EX) + sizeof(XSTATE) + 3072];
@@ -2429,7 +2429,7 @@ static void test_instrumentation_callback(void)
     ok( !instrumentation_call_count, "got %u.\n", instrumentation_call_count );
 }
 
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 
 static LONG consolidate_dummy_called;
 static PVOID CALLBACK test_consolidate_dummy(EXCEPTION_RECORD *rec)
@@ -8544,7 +8544,7 @@ static void test_mrs_currentel(void)
 
 #endif  /* __aarch64__ */
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 
 static DWORD WINAPI register_check_thread(void *arg)
 {
@@ -8650,7 +8650,7 @@ static void test_debug_registers(void)
     CloseHandle(thread);
 }
 
-#if defined(__x86_64__)
+#if defined(__x86_64__) && !defined(__arm64ec__)
 
 static void test_debug_registers_wow64(void)
 {
@@ -8961,7 +8961,7 @@ static void test_debug_service(DWORD numexc)
 
     pRtlRemoveVectoredExceptionHandler(vectored_handler);
 }
-#endif /* defined(__i386__) || defined(__x86_64__) */
+#endif /* defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__) */
 
 static DWORD outputdebugstring_exceptions_ansi;
 static DWORD outputdebugstring_exceptions_unicode;
@@ -9271,7 +9271,7 @@ static LONG CALLBACK breakpoint_handler(EXCEPTION_POINTERS *ExceptionInfo)
     ok(rec->ExceptionInformation[0] == 0,
        "got ExceptionInformation[0] = %Ix\n", rec->ExceptionInformation[0]);
     ExceptionInfo->ContextRecord->Eip = (DWORD)code_mem + 2;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     ok(ExceptionInfo->ContextRecord->Rip == (DWORD_PTR)code_mem + 1,
        "expected Rip = %Ix, got %Ix\n", (DWORD_PTR)code_mem + 1, ExceptionInfo->ContextRecord->Rip);
     ok(rec->NumberParameters == 1,
@@ -9301,7 +9301,7 @@ static LONG CALLBACK breakpoint_handler(EXCEPTION_POINTERS *ExceptionInfo)
     return (rec->ExceptionCode == EXCEPTION_BREAKPOINT) ? EXCEPTION_CONTINUE_EXECUTION : EXCEPTION_CONTINUE_SEARCH;
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 static const BYTE breakpoint_code[] = { 0xcd, 0x03, 0xc3 };   /* int $0x3; ret */
 #elif defined(__arm__)
 static const DWORD breakpoint_code[] = { 0xdefe, 0x4770 };  /* udf #0xfe; bx lr */
@@ -9329,7 +9329,7 @@ static void test_breakpoint(DWORD numexc)
     pRtlRemoveVectoredExceptionHandler(vectored_handler);
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 static BYTE except_code_set_ymm0[] =
 {
 #ifdef __x86_64__
@@ -9561,7 +9561,7 @@ static void test_user_apc(void)
 
 #ifdef __i386__
         context.Eax = 0xabacab;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
         context.Rax = 0xabacab;
 #elif defined(__arm__)
         context.R0 = 0xabacab;
@@ -9897,7 +9897,7 @@ static void test_unload_trace(void)
     }
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 
 static const unsigned int test_extended_context_data[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 static const unsigned test_extended_context_spoil_data1[8] = {0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80};
@@ -12220,7 +12220,7 @@ START_TEST(exception)
         test_closehandle(0, GetCurrentProcessToken());
         test_closehandle(0, GetCurrentThreadToken());
         test_closehandle(0, GetCurrentThreadEffectiveToken());
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
         test_stage = STAGE_XSTATE;
         test_debuggee_xstate();
         test_stage = STAGE_XSTATE_LEGACY_SSE;
@@ -12250,7 +12250,7 @@ START_TEST(exception)
     test_instrumentation_callback();
     test_single_step_address();
 
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 
 #define X(f) p##f = (void*)GetProcAddress(hntdll, #f)
     X(__C_specific_handler);

@@ -175,7 +175,7 @@ void init_thread_context( struct thread *thread )
 /* retrieve the thread x86 registers */
 void get_thread_context( struct thread *thread, struct context_data *context, unsigned int flags )
 {
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     x86_debug_state_t state;
     mach_msg_type_number_t count = sizeof(state) / sizeof(int);
     mach_msg_type_name_t type;
@@ -261,7 +261,7 @@ done:
 /* set the thread x86 registers */
 void set_thread_context( struct thread *thread, const struct context_data *context, unsigned int flags )
 {
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     x86_debug_state_t state;
     mach_msg_type_number_t count = sizeof(state) / sizeof(int);
     mach_msg_type_name_t type;

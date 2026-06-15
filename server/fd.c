@@ -358,7 +358,7 @@ static void atomic_store_ulong(volatile ULONG *ptr, ULONG value)
      * enough to ensure the stores aren't reordered by the compiler, and then
      * they will always be seen in-order from other CPUs. On other archs, we
      * need atomic intrinsics to guarantee that. */
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     *ptr = value;
 #else
     __atomic_store_n(ptr, value, __ATOMIC_SEQ_CST);
@@ -367,7 +367,7 @@ static void atomic_store_ulong(volatile ULONG *ptr, ULONG value)
 
 static void atomic_store_long(volatile LONG *ptr, LONG value)
 {
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     *ptr = value;
 #else
     __atomic_store_n(ptr, value, __ATOMIC_SEQ_CST);

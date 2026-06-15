@@ -20,7 +20,7 @@
 
 #include <corecrt.h>
 
-#if defined(__x86_64__) && _MSVCR_VER>=140
+#if defined(__x86_64__) && !defined(__arm64ec__) && _MSVCR_VER>=140
 
 #include <stdarg.h>
 #include <stdlib.h>

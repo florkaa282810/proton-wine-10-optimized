@@ -100,7 +100,7 @@ WINE_DEFAULT_DEBUG_CHANNEL(module);
 
 #ifdef __i386__
 static const char so_dir[] = "/i386-unix";
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 static const char so_dir[] = "/x86_64-unix";
 #elif defined(__arm__)
 static const char so_dir[] = "/arm-unix";
@@ -2387,7 +2387,7 @@ static void start_main_thread(void)
     init_cpu_info();
     init_files();
 
-#if defined(__x86_64__) || defined(__i386__)
+#if defined(__x86_64__) && !defined(__arm64ec__) || defined(__i386__)
     set_thread_teb( teb );
 #endif
 

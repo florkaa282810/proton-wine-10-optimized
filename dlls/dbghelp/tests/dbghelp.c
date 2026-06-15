@@ -67,7 +67,7 @@ static BOOL wait_process_window_visible(HANDLE proc, DWORD pid, DWORD timeout)
     return info.wnd != NULL;
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 
 static DWORD CALLBACK stack_walk_thread(void *arg)
 {
@@ -117,7 +117,7 @@ static void test_stack_walk(void)
     frame.AddrFrame.Offset = ctx.Ebp;
     frame.AddrStack.Segment = ctx.SegSs;
     frame.AddrStack.Offset = ctx.Esp;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     machine = IMAGE_FILE_MACHINE_AMD64;
 
     frame.AddrPC.Segment = ctx.SegCs;

@@ -136,7 +136,7 @@ static void test_NtQueryPerformanceCounter(void)
     ok(status == STATUS_SUCCESS, "expected STATUS_SUCCESS, got %08lx\n", status);
 }
 
-#if (defined(__i386__) || defined(__x86_64__)) && !defined(__arm64ec__)
+#if (defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)) && !defined(__arm64ec__)
 
 struct hypervisor_shared_data
 {
@@ -554,7 +554,7 @@ START_TEST(time)
     test_NtQueryPerformanceCounter();
     test_RtlQueryTimeZoneInformation();
     test_user_shared_data_time();
-#if (defined(__i386__) || defined(__x86_64__)) && !defined(__arm64ec__)
+#if (defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)) && !defined(__arm64ec__)
     test_RtlQueryPerformanceCounter();
 #endif
     test_TimerResolution();

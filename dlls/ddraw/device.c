@@ -44,7 +44,7 @@ static inline void set_fpu_control_word(WORD fpucw)
 {
 #if defined(__i386__) && defined(_MSC_VER)
     __asm fldcw fpucw;
-#elif defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__) && (defined(__GNUC__) || defined(__clang__)))
+#elif defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__) && !defined(__arm64ec__) && (defined(__GNUC__) || defined(__clang__)))
     __asm__ volatile ("fldcw %0" : : "m" (fpucw));
 #endif
 }
@@ -55,7 +55,7 @@ static inline WORD d3d_fpu_setup(void)
 
 #if defined(__i386__) && defined(_MSC_VER)
     __asm fnstcw oldcw;
-#elif defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__) && (defined(__GNUC__) || defined(__clang__)))
+#elif defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__) && !defined(__arm64ec__) && (defined(__GNUC__) || defined(__clang__)))
     __asm__ volatile ("fnstcw %0" : "=m" (oldcw));
 #else
     static BOOL warned = FALSE;

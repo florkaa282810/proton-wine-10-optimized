@@ -130,7 +130,7 @@ extern "C" {
 
 #if defined(__i386__)
 #define _CW_DEFAULT (_RC_NEAR + _PC_53 + _EM_INVALID + _EM_ZERODIVIDE + _EM_OVERFLOW + _EM_UNDERFLOW + _EM_INEXACT + _EM_DENORMAL)
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 #define _CW_DEFAULT (_RC_NEAR + _PC_64 + _EM_INVALID + _EM_ZERODIVIDE + _EM_OVERFLOW + _EM_UNDERFLOW + _EM_INEXACT + _EM_DENORMAL)
 #endif
 

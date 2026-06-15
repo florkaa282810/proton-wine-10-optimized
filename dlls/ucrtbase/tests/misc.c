@@ -1382,7 +1382,7 @@ static unsigned long fenv_encode(unsigned int e)
 
 #if defined(__i386__)
     return e<<24 | e<<16 | e;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     return e<<24 | e;
 #else
     return e;
@@ -1431,7 +1431,7 @@ static void test_fenv(void)
 
     ret = fegetenv(&env);
     ok(!ret, "fegetenv returned %x\n", ret);
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     if (env._Fe_ctl >> 24 != (env._Fe_ctl & 0xff))
     {
         win_skip("fenv_t format not supported (too old ucrtbase)\n");

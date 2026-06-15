@@ -155,7 +155,7 @@ static void  (CDECL   *pomp_unset_nest_lock)(omp_nest_lock_t *lock);
 #define ARCH "x86"
 #elif defined __aarch64__ || defined__arm64ec__
 #define ARCH "arm64"
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 #define ARCH "amd64"
 #elif defined __arm__
 #define ARCH "arm"
@@ -1966,7 +1966,7 @@ static void test_atomic_integer8(void)
         { p_vcomp_atomic_shl_i1, -0x11,  3,  0x78 },
         { p_vcomp_atomic_shr_i1,  0x11,  3,     2 },
         { p_vcomp_atomic_shr_i1, -0x11,  3,    -3 },
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
         { p_vcomp_atomic_shl_i1,  0x11, 11,     0 },
         { p_vcomp_atomic_shl_i1,  0x11, 19,     0 },
         { p_vcomp_atomic_shl_i1,  0x11, 35, -0x78 },
@@ -1996,7 +1996,7 @@ static void test_atomic_integer8(void)
     {
         { p_vcomp_atomic_shr_ui1, 0x11,  3,    2 },
         { p_vcomp_atomic_shr_ui1, 0xef,  3, 0x1d },
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
         { p_vcomp_atomic_shr_ui1, 0x11, 11,    0 },
         { p_vcomp_atomic_shr_ui1, 0x11, 19,    0 },
         { p_vcomp_atomic_shr_ui1, 0x11, 35,    2 },
@@ -2062,7 +2062,7 @@ static void test_atomic_integer16(void)
         { p_vcomp_atomic_shl_i2, -0x1122,  3,  0x76f0 },
         { p_vcomp_atomic_shr_i2,  0x1122,  3,   0x224 },
         { p_vcomp_atomic_shr_i2, -0x1122,  3,  -0x225 },
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
         { p_vcomp_atomic_shl_i2,  0x1122, 19,       0 },
         { p_vcomp_atomic_shl_i2,  0x1122, 35, -0x76f0 },
         { p_vcomp_atomic_shr_i2,  0x1122, 19,       0 },
@@ -2090,7 +2090,7 @@ static void test_atomic_integer16(void)
     {
         { p_vcomp_atomic_shr_ui2, 0x1122,  3,  0x224 },
         { p_vcomp_atomic_shr_ui2, 0xeede,  3, 0x1ddb },
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
         { p_vcomp_atomic_shr_ui2, 0x1122, 19,      0 },
         { p_vcomp_atomic_shr_ui2, 0x1122, 35,  0x224 },
 #endif
@@ -2145,7 +2145,7 @@ static void test_atomic_integer32(void)
         { p_vcomp_atomic_shr_i4, -0x11223344,           3,  -0x2244669 },
         { p_vcomp_atomic_sub_i4,  0x11223344,  0x77665544, -0x66442200 },
         { p_vcomp_atomic_xor_i4,  0x11223344,  0x77665544,  0x66446600 },
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
         { p_vcomp_atomic_shl_i4,  0x11223344,          35, -0x76ee65e0 },
         { p_vcomp_atomic_shr_i4,  0x11223344,          35,   0x2244668 },
 #endif
@@ -2161,7 +2161,7 @@ static void test_atomic_integer32(void)
         { p_vcomp_atomic_div_ui4, 0x77665544, 0xeeddccbc,          0 },
         { p_vcomp_atomic_shr_ui4, 0x11223344,          3,  0x2244668 },
         { p_vcomp_atomic_shr_ui4, 0xeeddccbc,          3, 0x1ddbb997 },
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
         { p_vcomp_atomic_shr_ui4, 0x11223344,         35,  0x2244668 },
 #endif
     };
@@ -2221,7 +2221,7 @@ static void test_atomic_integer64(void)
         { p_vcomp_atomic_shl_i8,  ULL(0x11223344,0x55667788), 67,                           0, TRUE },
         { p_vcomp_atomic_shr_i8,  ULL(0x11223344,0x55667788), 64,                           0, TRUE },
         { p_vcomp_atomic_shr_i8,  ULL(0x11223344,0x55667788), 67,                           0, TRUE },
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
         { p_vcomp_atomic_shl_i8,  ULL(0x11223344,0x55667788), 64,  ULL(0x11223344,0x55667788) },
         { p_vcomp_atomic_shl_i8,  ULL(0x11223344,0x55667788), 67, -ULL(0x76ee65dd,0x54cc43c0) },
         { p_vcomp_atomic_shr_i8,  ULL(0x11223344,0x55667788), 64,  ULL(0x11223344,0x55667788) },
@@ -2254,7 +2254,7 @@ static void test_atomic_integer64(void)
 #if defined(__i386__)
         { p_vcomp_atomic_shr_ui8, ULL(0x11223344,0x55667788), 64,                          0, TRUE },
         { p_vcomp_atomic_shr_ui8, ULL(0x11223344,0x55667788), 67,                          0, TRUE },
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
         { p_vcomp_atomic_shr_ui8, ULL(0x11223344,0x55667788), 64, ULL(0x11223344,0x55667788) },
         { p_vcomp_atomic_shr_ui8, ULL(0x11223344,0x55667788), 67, ULL(0x02244668,0x8aaccef1) },
 #endif

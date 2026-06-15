@@ -252,7 +252,7 @@ NTSTATUS WINAPI RtlWow64GetThreadSelectorEntry( HANDLE handle, THREAD_DESCRIPTOR
         context.SegCs = 0x23;
         context.SegSs = 0x2b;
         context.SegFs = 0x53;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
         context.SegCs = 0x23;
         __asm__( "movw %%fs,%0" : "=m" (context.SegFs) );
         __asm__( "movw %%ss,%0" : "=m" (context.SegSs) );

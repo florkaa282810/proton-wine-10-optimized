@@ -135,7 +135,7 @@ static void copy_va_list_data(void **args, va_list valist, int args_count)
         args[i] = va_arg(valist, void *);
 }
 
-#if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+#if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__))
 
 static inline char interlocked_cmpxchg8(char *dest, char xchg, char compare)
 {

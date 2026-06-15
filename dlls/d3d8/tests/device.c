@@ -3713,7 +3713,7 @@ static const GUID d3d8_private_data_test_guid =
     {0xa3,0x7f,0x9b,0x1d,0xf4,0x88,0xc5,0xfc}
 };
 
-#if defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__) && (defined(__GNUC__) || defined(__clang__)))
+#if defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__) && !defined(__arm64ec__) && (defined(__GNUC__) || defined(__clang__)))
 
 static inline void set_fpu_cw(WORD cw)
 {

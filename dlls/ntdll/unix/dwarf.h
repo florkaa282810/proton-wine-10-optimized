@@ -1032,7 +1032,7 @@ static void apply_frame_state( CONTEXT *context, struct frame_state *state,
 #define DW_REG_edi 0x07
 #define DW_REG_eip 0x08
 
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 
 #define DW_OP_rcx DW_OP_breg2
 #define DW_OP_rbp DW_OP_breg6

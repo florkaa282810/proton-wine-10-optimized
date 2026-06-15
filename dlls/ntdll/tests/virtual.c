@@ -2073,7 +2073,7 @@ static void test_user_shared_data(void)
             "Got number of physical pages %#lx, expected %#lx.\n",
             user_shared_data->NumberOfPhysicalPages, sbi.MmNumberOfPhysicalPages);
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     ok(user_shared_data->ProcessorFeatures[PF_RDTSC_INSTRUCTION_AVAILABLE] /* Supported since Pentium CPUs. */,
             "_RDTSC not available.\n");
 #endif

@@ -41,7 +41,7 @@ extern "C" {
 
 /* Calling conventions definitions */
 
-#if (defined(__x86_64__) || defined(__powerpc64__) || defined(__aarch64__)) && !defined(_WIN64)
+#if (defined(__x86_64__) && !defined(__arm64ec__) || defined(__powerpc64__) || defined(__aarch64__)) && !defined(_WIN64)
 #define _WIN64
 #endif
 
@@ -73,7 +73,7 @@ extern "C" {
 #   define __stdcall __attribute__((__stdcall__))
 #   define __cdecl __attribute__((__cdecl__))
 #  endif
-# elif defined(__x86_64__) && defined(__GNUC__)
+# elif defined(__x86_64__) && !defined(__arm64ec__) && defined(__GNUC__)
 #  if __has_attribute(__force_align_arg_pointer__)
 #   define __stdcall __attribute__((ms_abi)) __attribute__((__force_align_arg_pointer__))
 #  else

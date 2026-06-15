@@ -102,7 +102,7 @@ void __cdecl __attribute__((naked)) __wine_longjmp( __wine_jmp_buf *buf, int ret
          "ret" );
 }
 
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 
 __ASM_GLOBAL_FUNC( __wine_setjmpex,
                    "movq %rdx,(%rcx)\n\t"          /* jmp_buf->Frame */

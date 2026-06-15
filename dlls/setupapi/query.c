@@ -36,7 +36,7 @@ WINE_DEFAULT_DEBUG_CHANNEL(setupapi);
 #ifdef __i386__
 static const WCHAR source_disks_names_platform[] = L"SourceDisksNames.x86";
 static const WCHAR source_disks_files_platform[] = L"SourceDisksFiles.x86";
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 static const WCHAR source_disks_names_platform[] = L"SourceDisksNames.amd64";
 static const WCHAR source_disks_files_platform[] = L"SourceDisksFiles.amd64";
 #elif defined(__arm__)

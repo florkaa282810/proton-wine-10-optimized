@@ -2170,7 +2170,7 @@ static void test_import_resolution(void)
         0xB8, 0x01, 0x00, 0x00, 0x00, /* mov eax, 1 */
         0xC2, 0x0C, 0x00,             /* ret 12 */
     };
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     static const UCHAR tls_init_code[] = {
         0x48, 0x8B, 0x0D, 0xF1, 0xFF, 0xFF, 0xFF, /* mov rcx, [rip + tls_init_fn_output] */
         0x89, 0x11,                               /* mov [rcx], edx */
@@ -3636,7 +3636,7 @@ static void child_process(const char *dll_name, DWORD target_offset)
 
 static void test_ExitProcess(void)
 {
-#if defined(__i386__) || defined(__x86_64__) || defined(__aarch64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__) || defined(__aarch64__)
 #include "pshpack1.h"
 #ifdef __x86_64__
     static struct section_data

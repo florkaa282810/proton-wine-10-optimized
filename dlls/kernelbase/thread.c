@@ -769,7 +769,7 @@ BOOL WINAPI Wow64GetThreadContext( HANDLE handle, WOW64_CONTEXT *context)
 {
 #ifdef __i386__
     return set_ntstatus( NtGetContextThread( handle, (CONTEXT *)context ));
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     return set_ntstatus( RtlWow64GetThreadContext( handle, context ));
 #else
     return set_ntstatus( STATUS_NOT_IMPLEMENTED );
@@ -784,7 +784,7 @@ BOOL WINAPI Wow64SetThreadContext( HANDLE handle, const WOW64_CONTEXT *context)
 {
 #ifdef __i386__
     return set_ntstatus( NtSetContextThread( handle, (const CONTEXT *)context ));
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     return set_ntstatus( RtlWow64SetThreadContext( handle, context ));
 #else
     return set_ntstatus( STATUS_NOT_IMPLEMENTED );
@@ -864,7 +864,7 @@ static void __attribute__((naked)) WINAPI switch_fiber( CONTEXT *old, CONTEXT *n
          "mov sp, x2\n\t"
          "ret" );
 }
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 extern void WINAPI switch_fiber( CONTEXT *old, CONTEXT *new );
 __ASM_GLOBAL_FUNC( switch_fiber,
                     "movq %rbx,0x90(%rcx)\n\t"       /* old->Rbx */
@@ -989,7 +989,7 @@ static void init_fiber_context( struct fiber_data *fiber )
 #elif defined(__arm64ec__)
     fiber->context.Rsp = (ULONG_PTR)fiber->stack_base;
     fiber->context.Rip = (ULONG_PTR)start_fiber;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     fiber->context.Rsp = (ULONG_PTR)fiber->stack_base - 0x28;
     fiber->context.Rip = (ULONG_PTR)start_fiber;
 #elif defined(__arm__)

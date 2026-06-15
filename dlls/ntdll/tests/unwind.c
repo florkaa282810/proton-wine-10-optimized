@@ -1513,7 +1513,7 @@ static void test_virtual_unwind_arm(void)
 
 #endif  /* __arm__ */
 
-#if defined(__aarch64__) || defined(__x86_64__)
+#if defined(__aarch64__) || defined(__x86_64__) && !defined(__arm64ec__)
 
 #define UWOP_TWOBYTES(x) (((x) >> 8) & 0xff), ((x) & 0xff)
 
@@ -3810,7 +3810,7 @@ START_TEST(unwind)
     test_virtual_unwind_arm();
 #elif defined(__aarch64__)
     test_virtual_unwind_arm64();
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     test_virtual_unwind_x86();
     test_virtual_unwind_arm64();
 #endif

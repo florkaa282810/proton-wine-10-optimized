@@ -79,7 +79,7 @@ static struct session_thread_data *get_session_thread_data(void)
     return thread_info->session_data;
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 /* this prevents compilers from incorrectly reordering non-volatile reads (e.g., memcpy) from shared memory */
 #define __SHARED_READ_FENCE do { __asm__ __volatile__( "" ::: "memory" ); } while (0)
 #else

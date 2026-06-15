@@ -34,7 +34,7 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(relay);
 
-#if (defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)) && !defined(__arm64ec__)
+#if (defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__) || defined(__arm__) || defined(__aarch64__)) && !defined(__arm64ec__)
 
 struct relay_descr  /* descriptor for a module */
 {
@@ -679,7 +679,7 @@ static LONGLONG WINAPI relay_call( struct relay_descr *descr, unsigned int idx, 
     return ret;
 }
 
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 
 /***********************************************************************
  *           relay_trace_entry

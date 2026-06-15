@@ -2396,7 +2396,7 @@ static void test_write_watch(void)
     VirtualFree( base, 0, MEM_RELEASE );
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 
 static DWORD WINAPI stack_commit_func( void *arg )
 {
@@ -2482,7 +2482,7 @@ static void test_stack_commit(void)
     VirtualFree( call_on_stack, 0, MEM_RELEASE );
 }
 
-#endif  /* defined(__i386__) || defined(__x86_64__) */
+#endif  /* defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__) */
 #ifdef __i386__
 
 static LONG num_guard_page_calls;
@@ -4642,7 +4642,7 @@ START_TEST(virtual)
     test_write_watch();
     test_PrefetchVirtualMemory();
     test_ReadProcessMemory();
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     test_stack_commit();
 #endif
 #ifdef __i386__

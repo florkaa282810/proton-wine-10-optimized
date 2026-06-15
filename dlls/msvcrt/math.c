@@ -714,7 +714,7 @@ __int64 CDECL _abs64( __int64 n )
     return n >= 0 ? n : -n;
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 
 static unsigned int get_mxcsr(void)
 {
@@ -950,7 +950,7 @@ static void _setfp( unsigned int *cw, unsigned int cw_mask,
         __asm__ __volatile__( "fnclex" );
     if (oldcw != newcw)
         __asm__ __volatile__( "fldcw %0" : : "m" (newcw) );
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     _setfp_sse(cw, cw_mask, sw, sw_mask);
 #elif defined(__aarch64__)
     ULONG_PTR old_fpsr = 0, fpsr = 0, old_fpcr = 0, fpcr = 0;
@@ -1285,7 +1285,7 @@ int CDECL _controlfp_s(unsigned int *cur, unsigned int newval, unsigned int mask
     return 0;
 }
 
-#if _MSVCR_VER >= 140 && (defined(__i386__) || defined(__x86_64__))
+#if _MSVCR_VER >= 140 && (defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__))
 enum fenv_masks
 {
     FENV_X_INVALID = 0x00100010,

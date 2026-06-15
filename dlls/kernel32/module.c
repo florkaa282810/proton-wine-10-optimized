@@ -320,7 +320,7 @@ FARPROC WINAPI __attribute__((naked)) GetProcAddress( HMODULE module, LPCSTR fun
          "ret\n\t"
          ".seh_endproc" );
 }
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 __ASM_GLOBAL_FUNC( GetProcAddress,
                    ".byte 0x48\n\t"  /* hotpatch prolog */
                    "pushq %rbp\n\t"

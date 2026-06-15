@@ -37,7 +37,7 @@
 
 #ifdef __i386__
 static const USHORT current_machine = IMAGE_FILE_MACHINE_I386;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 static const USHORT current_machine = IMAGE_FILE_MACHINE_AMD64;
 #elif defined(__arm__)
 static const USHORT current_machine = IMAGE_FILE_MACHINE_ARMNT;
@@ -47,7 +47,7 @@ static const USHORT current_machine = IMAGE_FILE_MACHINE_ARM64;
 static const USHORT current_machine = IMAGE_FILE_MACHINE_UNKNOWN;
 #endif
 
-#if defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__) || defined(__arm__) || defined(__aarch64__)
 static const UINT_PTR page_size = 0x1000;
 #else
 extern UINT_PTR page_size;
@@ -147,7 +147,7 @@ extern void heap_thread_detach(void);
            (c)->Esi, (c)->Edi, LOWORD((c)->SegCs), LOWORD((c)->SegDs), LOWORD((c)->SegEs), \
            LOWORD((c)->SegFs), LOWORD((c)->SegGs), LOWORD((c)->SegSs) ); \
     } while(0)
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 # define TRACE_CONTEXT(c) do { \
     TRACE( "rip=%016I64x rsp=%016I64x rbp=%016I64x eflags=%08lx\n", (c)->Rip, (c)->Rsp, (c)->Rbp, (c)->EFlags ); \
     TRACE( "rax=%016I64x rbx=%016I64x rcx=%016I64x rdx=%016I64x\n", (c)->Rax, (c)->Rbx, (c)->Rcx, (c)->Rdx ); \

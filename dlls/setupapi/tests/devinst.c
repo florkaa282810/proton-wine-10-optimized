@@ -3313,7 +3313,7 @@ static void test_device_install_params(void)
 #define MYEXT "x86"
 #define WOWEXT "AMD64"
 #define WRONGEXT "ARM"
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 #define MYEXT "AMD64"
 #define WOWEXT "x86"
 #define WRONGEXT "ARM64"

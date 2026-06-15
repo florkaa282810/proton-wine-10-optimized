@@ -2387,7 +2387,7 @@ static struct
     LONG trylock_shared;
 } srwlock_base_errors;
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 #include "pshpack1.h"
 struct
 {
@@ -3693,7 +3693,7 @@ START_TEST(sync)
     test_condvars_consumer_producer();
     test_srwlock_base(&aligned_srwlock);
     test_srwlock_quirk();
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     /* unaligned locks only work on x86 platforms */
     test_srwlock_base(&unaligned_srwlock.lock);
 #endif

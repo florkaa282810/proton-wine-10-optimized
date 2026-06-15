@@ -2260,7 +2260,7 @@ static void test_IsWow64Process2(void)
         ret = pIsWow64Process2(pi.hProcess, &machine, &native_machine);
         ok(ret, "IsWow64Process2 error %lu\n", GetLastError());
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
         ok(machine == IMAGE_FILE_MACHINE_I386, "got %#x\n", machine);
         ok( native_machine == IMAGE_FILE_MACHINE_AMD64 ||
             native_machine == IMAGE_FILE_MACHINE_ARM64, "got %#x\n", native_machine);
@@ -3612,7 +3612,7 @@ static void test_StdHandleInheritance(void)
     SetStdHandle(STD_ERROR_HANDLE,  hsavestd[2]);
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 static BOOL read_nt_header(HANDLE process_handle, MEMORY_BASIC_INFORMATION *mbi,
                            IMAGE_NT_HEADERS *nt_header)
 {

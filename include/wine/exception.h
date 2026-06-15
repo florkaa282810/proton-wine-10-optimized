@@ -99,7 +99,7 @@ extern "C" {
 
 #ifdef __i386__
 typedef struct { int reg[16]; } __wine_jmp_buf;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 typedef struct { DECLSPEC_ALIGN(16) struct { unsigned __int64 Part[2]; } reg[16]; } __wine_jmp_buf;
 #elif defined(__arm__)
 typedef struct { int reg[28]; } __wine_jmp_buf;

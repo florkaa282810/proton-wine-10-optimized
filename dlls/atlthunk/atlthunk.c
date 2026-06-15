@@ -22,7 +22,7 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(atlthunk);
 
-#if defined(__i386__) || defined(__x86_64__) || defined(__aarch64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__) || defined(__aarch64__)
 
 struct AtlThunkData_t {
     struct thunk_pool *pool;
@@ -34,7 +34,7 @@ struct AtlThunkData_t {
 #include "pshpack1.h"
 struct thunk_code
 {
-#if defined(__x86_64__)
+#if defined(__x86_64__) && !defined(__arm64ec__)
     BYTE  mov_rip_rcx[3];     /* mov mov_offset(%rip), %rcx */
     DWORD mov_offset;
     WORD  jmp_rip;            /* jmp *jmp_offset(%rip) */
@@ -78,7 +78,7 @@ static struct thunk_pool *alloc_thunk_pool(void)
     for (i = 0; i < ARRAY_SIZE(thunks->thunks); i++)
     {
         struct thunk_code *thunk = &thunks->thunks[i];
-#if defined(__x86_64__)
+#if defined(__x86_64__) && !defined(__arm64ec__)
         thunk->mov_rip_rcx[0]    = 0x48;    /* mov mov_offset(%rip), %rcx */
         thunk->mov_rip_rcx[1]    = 0x8b;
         thunk->mov_rip_rcx[2]    = 0x0d;

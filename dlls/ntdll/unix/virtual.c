@@ -7223,7 +7223,7 @@ NTSTATUS WINAPI NtSetInformationVirtualMemory( HANDLE process,
  */
 NTSTATUS WINAPI NtFlushInstructionCache( HANDLE handle, const void *addr, SIZE_T size )
 {
-#if defined(__x86_64__) || defined(__i386__)
+#if defined(__x86_64__) && !defined(__arm64ec__) || defined(__i386__)
     /* no-op */
 #elif defined(HAVE___CLEAR_CACHE)
     if (handle == GetCurrentProcess())

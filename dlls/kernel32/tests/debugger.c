@@ -283,7 +283,7 @@ static void *get_ip(const CONTEXT *ctx)
 {
 #ifdef __i386__
     return (void *)ctx->Eip;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     return (void *)ctx->Rip;
 #else
     return NULL;
@@ -294,7 +294,7 @@ static void set_ip(CONTEXT *ctx, void *ip)
 {
 #ifdef __i386__
     ctx->Eip = (DWORD_PTR)ip;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     ctx->Rip = (DWORD_PTR)ip;
 #endif
 }
@@ -1069,7 +1069,7 @@ static void test_debug_loop(int argc, char **argv)
 
         if (ev.dwDebugEventCode == EXIT_PROCESS_DEBUG_EVENT) break;
         check_dll_event( pi.hProcess, &ev );
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
         if (ev.dwDebugEventCode == EXCEPTION_DEBUG_EVENT &&
             ev.u.Exception.ExceptionRecord.ExceptionCode == EXCEPTION_BREAKPOINT)
         {
@@ -1527,7 +1527,7 @@ static void expect_breakpoint_exception_(unsigned line, struct debugger_context 
 #define single_step(a,b,c) single_step_(__LINE__,a,b,c)
 static void single_step_(unsigned line, struct debugger_context *ctx, struct debuggee_thread *thread, void *expect_addr)
 {
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     fetch_thread_context(thread);
     thread->ctx.EFlags |= 0x100;
     set_thread_context(ctx, thread);
@@ -1542,7 +1542,7 @@ static void single_step_(unsigned line, struct debugger_context *ctx, struct deb
 }
 
 static const BYTE loop_code[] = {
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     0x90,                         /* nop */
     0x90,                         /* nop */
     0x90,                         /* nop */
@@ -1572,7 +1572,7 @@ static const BYTE call_debug_service_code[] = {
     0x5f,                         /* popl %edi */
     0x5b,                         /* popl %ebx */
     0xc3,                         /* ret */
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     0x53,                         /* push %rbx */
     0x57,                         /* push %rdi */
     0x48, 0x89, 0xc8,             /* movl %rcx,%rax */
@@ -1595,7 +1595,7 @@ static const BYTE call_debug_service_code[] = {
 #endif
 };
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 #define OP_BP 0xcc
 #else
 #define OP_BP 0
@@ -2052,7 +2052,7 @@ static void test_debugger(const char *argv0)
         ctx.main_thread->ctx.Edx = 104;
         ctx.main_thread->ctx.Esi = 105;
         ctx.main_thread->ctx.Edi = 106;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
         ctx.main_thread->ctx.Rax = 101;
         ctx.main_thread->ctx.Rbx = 102;
         ctx.main_thread->ctx.Rcx = 103;
@@ -2076,7 +2076,7 @@ static void test_debugger(const char *argv0)
         ok(ctx.main_thread->ctx.Ebx == 102, "Ebx = %lx\n", ctx.main_thread->ctx.Ebx);
         ok(ctx.main_thread->ctx.Esi == 105, "Esi = %lx\n", ctx.main_thread->ctx.Esi);
         ok(ctx.main_thread->ctx.Edi == 106, "Edi = %lx\n", ctx.main_thread->ctx.Edi);
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
         ok(ctx.main_thread->ctx.Rax == 101, "Rax = %I64x\n", ctx.main_thread->ctx.Rax);
         ok(ctx.main_thread->ctx.Rbx == 102, "Rbx = %I64x\n", ctx.main_thread->ctx.Rbx);
         ok(ctx.main_thread->ctx.Rcx == 103, "Rcx = %I64x\n", ctx.main_thread->ctx.Rcx);
@@ -2117,7 +2117,7 @@ static void test_debugger(const char *argv0)
         ok(ctx.main_thread->ctx.Edx != 104, "Edx = %lx\n", ctx.main_thread->ctx.Edx);
         ok(ctx.main_thread->ctx.Esi == 105, "Esi = %lx\n", ctx.main_thread->ctx.Esi);
         ok(ctx.main_thread->ctx.Edi == 106, "Edi = %lx\n", ctx.main_thread->ctx.Edi);
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
         ok(ctx.main_thread->ctx.Rax == 0,   "Rax = %I64x\n", ctx.main_thread->ctx.Rax);
         ok(ctx.main_thread->ctx.Rbx == 102, "Rbx = %I64x\n", ctx.main_thread->ctx.Rbx);
         ok(ctx.main_thread->ctx.Rcx != 103, "Rcx = %I64x\n", ctx.main_thread->ctx.Rcx);
@@ -2155,7 +2155,7 @@ static void test_debugger(const char *argv0)
 #if defined(__i386__)
         ctx.main_thread->ctx.EFlags |= 0x100;
         ctx.main_thread->ctx.Eip = (ULONG_PTR)mem + 10;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
         ctx.main_thread->ctx.EFlags |= 0x100;
         ctx.main_thread->ctx.Rip = (ULONG64)mem + 10;
 #endif

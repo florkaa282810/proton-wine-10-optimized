@@ -404,7 +404,7 @@ void esync_clear( int fd )
 
 static inline void small_pause(void)
 {
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     __asm__ __volatile__( "rep;nop" : : : "memory" );
 #elif defined(__aarch64__)
     __asm__ __volatile__( "yield" : : : "memory" );

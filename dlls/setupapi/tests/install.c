@@ -38,7 +38,7 @@
 #ifdef __i386__
 #define MYEXT "x86"
 #define WRONGEXT "ARM"
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 #define MYEXT "AMD64"
 #define WRONGEXT "ARM64"
 #elif defined(__arm__)

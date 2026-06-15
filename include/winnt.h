@@ -203,7 +203,7 @@ extern "C" {
 # define __has_attribute(x) 0
 #endif
 
-#if ((defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)))) || __has_attribute(ms_hook_prologue)) && (defined(__i386__) || defined(__x86_64__))
+#if ((defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)))) || __has_attribute(ms_hook_prologue)) && (defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__))
 #define DECLSPEC_HOTPATCH __attribute__((__ms_hook_prologue__))
 #else
 #define DECLSPEC_HOTPATCH
@@ -2477,14 +2477,14 @@ static FORCEINLINE struct _TEB * WINAPI NtCurrentTeb(void)
 {
     return (struct _TEB *)__getReg(18);
 }
-#elif defined(__x86_64__) && defined(__GNUC__)
+#elif defined(__x86_64__) && !defined(__arm64ec__) && defined(__GNUC__)
 static FORCEINLINE struct _TEB * WINAPI NtCurrentTeb(void)
 {
     struct _TEB *teb;
     __asm__("movq %%gs:0x30,%0" : "=r" (teb));
     return teb;
 }
-#elif defined(__x86_64__) && defined(_MSC_VER)
+#elif defined(__x86_64__) && !defined(__arm64ec__) && defined(_MSC_VER)
 unsigned __int64 __readgsqword(unsigned long);
 #pragma intrinsic(__readgsqword)
 static FORCEINLINE struct _TEB * WINAPI NtCurrentTeb(void)
@@ -7072,7 +7072,7 @@ static FORCEINLINE void MemoryBarrier(void)
     __dmb(_ARM64_BARRIER_SY);
 }
 
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 
 #pragma intrinsic(__faststorefence)
 void __faststorefence(void);
@@ -7108,21 +7108,21 @@ static FORCEINLINE void MemoryBarrier(void)
 #define __WINE_STORE32_NO_FENCE(dest, value) ((void)(*(dest) = (value)))
 #endif  /* _MSC_VER >= 1700 */
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 #pragma intrinsic(_ReadWriteBarrier)
 void _ReadWriteBarrier(void);
-#endif  /* defined(__i386__) || defined(__x86_64__) */
+#endif  /* defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__) */
 
 static void __wine_memory_barrier_acq_rel(void)
 {
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 #pragma warning(suppress:4996)
     _ReadWriteBarrier();
 #elif defined(__arm__)
     __dmb(_ARM_BARRIER_ISH);
 #elif defined(__aarch64__)
     __dmb(_ARM64_BARRIER_ISH);
-#endif  /* defined(__i386__) || defined(__x86_64__) */
+#endif  /* defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__) */
 }
 
 static FORCEINLINE LONG ReadAcquire( LONG const volatile *src )
@@ -7209,7 +7209,7 @@ static FORCEINLINE LONG WINAPI InterlockedExchange( LONG volatile *dest, LONG va
     LONG ret;
 #if (defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)))) || defined(__clang__)
     ret = __atomic_exchange_n( dest, val, __ATOMIC_SEQ_CST );
-#elif (defined(__i386__) || defined(__x86_64__)) && !defined(__arm64ec__)
+#elif (defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)) && !defined(__arm64ec__)
     __asm__ __volatile__( "lock; xchgl %0,(%1)"
                           : "=r" (ret) :"r" (dest), "0" (val) : "memory" );
 #else
@@ -7268,7 +7268,7 @@ static FORCEINLINE void * WINAPI InterlockedExchangePointer( void *volatile *des
     void *ret;
 #if (defined(__GNUC__) && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)))) || defined(__clang__)
     ret = __atomic_exchange_n( dest, val, __ATOMIC_SEQ_CST );
-#elif defined(__x86_64__) && !defined(__arm64ec__)
+#elif defined(__x86_64__) && !defined(__arm64ec__) && !defined(__arm64ec__)
     __asm__ __volatile__( "lock; xchgq %0,(%1)" : "=r" (ret) :"r" (dest), "0" (val) : "memory" );
 #elif defined(__i386__) && !defined(__arm64ec__)
     __asm__ __volatile__( "lock; xchgl %0,(%1)" : "=r" (ret) :"r" (dest), "0" (val) : "memory" );
@@ -7303,7 +7303,7 @@ static FORCEINLINE void MemoryBarrier(void)
     __sync_synchronize();
 }
 
-#if defined(__x86_64__) || defined(__i386__)
+#if defined(__x86_64__) && !defined(__arm64ec__) || defined(__i386__)
 /* On x86, Support old GCC with either no or buggy (GCC BZ#81316) __atomic_* support */
 #define __WINE_ATOMIC_LOAD_ACQUIRE(ptr, ret) do { *(ret) = *(ptr); __asm__ __volatile__( "" ::: "memory" ); } while (0)
 #define __WINE_ATOMIC_LOAD_RELAXED(ptr, ret) do { *(ret) = *(ptr); } while (0)
@@ -7314,7 +7314,7 @@ static FORCEINLINE void MemoryBarrier(void)
 #define __WINE_ATOMIC_LOAD_RELAXED(ptr, ret) __atomic_load(ptr, ret, __ATOMIC_RELAXED)
 #define __WINE_ATOMIC_STORE_RELEASE(ptr, val) __atomic_store(ptr, val, __ATOMIC_RELEASE)
 #define __WINE_ATOMIC_STORE_RELAXED(ptr, val) __atomic_store(ptr, val, __ATOMIC_RELAXED)
-#endif  /* defined(__x86_64__) || defined(__i386__) */
+#endif  /* defined(__x86_64__) && !defined(__arm64ec__) || defined(__i386__) */
 
 static FORCEINLINE LONG ReadAcquire( LONG const volatile *src )
 {
@@ -7349,7 +7349,7 @@ static FORCEINLINE void WriteNoFence( LONG volatile *dest, LONG value )
 
 static FORCEINLINE DECLSPEC_NORETURN void __fastfail(unsigned int code)
 {
-#if (defined(__x86_64__) || defined(__i386__)) && !defined(__arm64ec__)
+#if (defined(__x86_64__) && !defined(__arm64ec__) || defined(__i386__)) && !defined(__arm64ec__)
     for (;;) __asm__ __volatile__( "int $0x29" :: "c" ((ULONG_PTR)code) : "memory" );
 #elif defined(__aarch64__) || defined(__arm64ec__)
     register ULONG_PTR val __asm__("x0") = code;
@@ -7377,7 +7377,7 @@ unsigned char _InterlockedCompareExchange128(volatile __int64 *, __int64, __int6
 
 static FORCEINLINE unsigned char InterlockedCompareExchange128( volatile __int64 *dest, __int64 xchg_high, __int64 xchg_low, __int64 *compare )
 {
-#if defined(__x86_64__) && !defined(__arm64ec__)
+#if defined(__x86_64__) && !defined(__arm64ec__) && !defined(__arm64ec__)
     unsigned char ret;
     __asm__ __volatile__( "lock cmpxchg16b %0; setz %b2"
                           : "=m" (dest[0]), "=m" (dest[1]), "=r" (ret),
@@ -7409,7 +7409,7 @@ static FORCEINLINE void YieldProcessor(void)
 #if defined(__GNUC__) || defined(__clang__)
 #if defined(__arm__) || defined(__aarch64__) || defined(__arm64ec__)
     __asm__ __volatile__( "dmb ishst\n\tyield" : : : "memory" );
-#elif defined(__i386__) || defined(__x86_64__)
+#elif defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     __asm__ __volatile__( "rep; nop" : : : "memory" );
 #else
     __asm__ __volatile__( "" : : : "memory" );

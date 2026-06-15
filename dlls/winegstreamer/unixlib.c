@@ -290,7 +290,7 @@ NTSTATUS wg_init_gstreamer(void *arg)
     if ((e = getenv("WINE_GST_REGISTRY_DIR")))
     {
         char gst_reg[PATH_MAX];
-#if defined(__x86_64__)
+#if defined(__x86_64__) && !defined(__arm64ec__)
         const char *arch = "/registry.x86_64.bin";
 #elif defined(__i386__)
         const char *arch = "/registry.i386.bin";

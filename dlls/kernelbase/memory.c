@@ -124,7 +124,7 @@ BOOL WINAPI DECLSPEC_HOTPATCH FlushViewOfFile( const void *base, SIZE_T size )
 /****************************************************************************
  *           FlushInstructionCache   (kernelbase.@)
  */
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 BOOL WINAPI DECLSPEC_HOTPATCH FlushInstructionCache( HANDLE process, LPCVOID addr, SIZE_T size )
 {
     /* X86 processors have coherent instruction and data caches, no need to do anything */
@@ -1664,7 +1664,7 @@ BOOL WINAPI CopyContext( CONTEXT *dst, DWORD context_flags, CONTEXT *src )
 }
 
 
-#if defined(__x86_64__)
+#if defined(__x86_64__) && !defined(__arm64ec__)
 
 /***********************************************************************
  *             GetEnabledXStateFeatures   (kernelbase.@)

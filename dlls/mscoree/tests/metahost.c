@@ -29,7 +29,7 @@
 #include "metahost.h"
 #include "wine/test.h"
 
-#if !defined(__i386__) && !defined(__x86_64__)
+#if !defined(__i386__) && !defined(__x86_64__) && !defined(__arm64ec__)
 static int has_mono = 0;
 #else
 static int has_mono = 1;

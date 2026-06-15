@@ -304,7 +304,7 @@ static void load_resource( const WCHAR *name, WCHAR *filename )
 
 #ifdef __i386__
 #define EXT "x86"
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 #define EXT "amd64"
 #elif defined(__arm__)
 #define EXT "arm"

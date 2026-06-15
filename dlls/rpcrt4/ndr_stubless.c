@@ -1028,7 +1028,7 @@ __ASM_GLOBAL_FUNC( NdrClientCall2,
                    "pop {fp,lr}\n\t"
                    "add sp, #8\n\t"
                    "bx lr" )
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 __ASM_GLOBAL_FUNC( NdrClientCall2,
                    "subq $0x28,%rsp\n\t"
                    __ASM_SEH(".seh_stackalloc 0x28\n\t")
@@ -1862,7 +1862,7 @@ __ASM_GLOBAL_FUNC( NdrAsyncClientCall,
                    "pop {fp,lr}\n\t"
                    "add sp, #8\n\t"
                    "bx lr" )
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 __ASM_GLOBAL_FUNC( NdrAsyncClientCall,
                    "subq $0x28,%rsp\n\t"
                    __ASM_SEH(".seh_stackalloc 0x28\n\t")
@@ -2226,7 +2226,7 @@ CLIENT_CALL_RETURN __attribute__((naked)) NdrClientCall3( MIDL_STUBLESS_PROXY_IN
          "ret\n\t"
          ".seh_endproc" );
 }
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 __ASM_GLOBAL_FUNC( NdrClientCall3,
                    "subq $0x28,%rsp\n\t"
                    __ASM_SEH(".seh_stackalloc 0x28\n\t")
@@ -2297,7 +2297,7 @@ CLIENT_CALL_RETURN __attribute__((naked)) Ndr64AsyncClientCall( MIDL_STUBLESS_PR
          "ret\n\t"
          ".seh_endproc" );
 }
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 __ASM_GLOBAL_FUNC( Ndr64AsyncClientCall,
                    "subq $0x28,%rsp\n\t"
                    __ASM_SEH(".seh_stackalloc 0x28\n\t")

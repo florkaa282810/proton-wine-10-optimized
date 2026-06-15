@@ -294,7 +294,7 @@ cpu_override;
  * This a set of mutually exclusive #if define()s each providing its own get_cpuinfo() to be called
  * from init_cpu_info();
  */
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 
 BOOL xstate_compaction_enabled = FALSE;
 UINT64 xstate_supported_features_mask;
@@ -468,7 +468,7 @@ static void get_cpuinfo( SYSTEM_CPU_INFORMATION *info )
 
 #if defined(__i386__)
     info->ProcessorArchitecture = PROCESSOR_ARCHITECTURE_INTEL;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     info->ProcessorArchitecture = PROCESSOR_ARCHITECTURE_AMD64;
 #endif
 

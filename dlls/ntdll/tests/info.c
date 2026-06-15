@@ -2958,7 +2958,7 @@ static void test_mapprotection(void)
     status = pNtMapViewOfSection ( h, GetCurrentProcess(), &addr, 0, 0, &offset, &count, ViewShare, 0, PAGE_READWRITE);
     ok( status == STATUS_SUCCESS, "Expected STATUS_SUCCESS, got %08lx\n", status);
 
-#if defined(__x86_64__) || defined(__i386__)
+#if defined(__x86_64__) && !defined(__arm64ec__) || defined(__i386__)
     *(unsigned char*)addr = 0xc3;       /* lret ... in both i386 and x86_64 */
 #elif defined(__arm__)
     *(unsigned long*)addr = 0xe12fff1e; /* bx lr */

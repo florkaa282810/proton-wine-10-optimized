@@ -124,7 +124,7 @@ __ASM_STDCALL_FUNC( DebugBreak, 0, "jmp " __ASM_STDCALL("DbgBreakPoint", 0) )
 __ASM_GLOBAL_FUNC( DebugBreak, "brk #0xf000; ret" )
 #elif defined(__arm64ec__)
 void __attribute__((naked)) WINAPI DebugBreak(void) { asm( "brk #0xf000; ret" ); }
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 __ASM_GLOBAL_FUNC( DebugBreak, "jmp " __ASM_NAME("DbgBreakPoint") )
 #elif defined(__arm__)
 __ASM_GLOBAL_FUNC( DebugBreak, "udf #0xfe; bx lr" )

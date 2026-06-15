@@ -154,7 +154,7 @@ void CDECL __DestructExceptionObject(EXCEPTION_RECORD*);
 void** __cdecl __current_exception(void);
 int* __cdecl __processing_throw(void);
 
-#if defined(__x86_64__) && _MSVCR_VER>=140
+#if defined(__x86_64__) && !defined(__arm64ec__) && _MSVCR_VER>=140
 BOOL msvcrt_init_handler4(void);
 void msvcrt_attach_handler4(void);
 void msvcrt_free_handler4(void);

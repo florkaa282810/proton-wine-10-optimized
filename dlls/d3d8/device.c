@@ -3654,7 +3654,7 @@ static void setup_fpu(void)
     __asm fnstcw cw;
     cw = (cw & ~0xf3f) | 0x3f;
     __asm fldcw cw;
-#elif defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__) && (defined(__GNUC__) || defined(__clang__)))
+#elif defined(__i386__) || (defined(__x86_64__) && !defined(__arm64ec__) && !defined(__arm64ec__) && (defined(__GNUC__) || defined(__clang__)))
     WORD cw;
     __asm__ volatile ("fnstcw %0" : "=m" (cw));
     cw = (cw & ~0xf3f) | 0x3f;

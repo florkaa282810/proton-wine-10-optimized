@@ -1981,7 +1981,7 @@ static void WINAPI main_test_task(DEVICE_OBJECT *device, void *context)
     IoCompleteRequest(irp, IO_NO_INCREMENT);
 }
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 static void test_executable_pool(void)
 {
     static const unsigned char bytes[] =
@@ -2468,7 +2468,7 @@ static NTSTATUS main_test(DEVICE_OBJECT *device, IRP *irp, IO_STACK_LOCATION *st
     test_lookup_thread();
     test_IoAttachDeviceToDeviceStack();
     test_object_name();
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     test_executable_pool();
 #endif
     test_affinity();

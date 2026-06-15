@@ -1232,7 +1232,7 @@ void WINAPI InstallHinfSectionW( HWND hwnd, HINSTANCE handle, LPCWSTR cmdline, I
 {
 #ifdef __i386__
     static const WCHAR nt_platformW[] = L".ntx86";
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     static const WCHAR nt_platformW[] = L".ntamd64";
 #elif defined(__arm__)
     static const WCHAR nt_platformW[] = L".ntarm";

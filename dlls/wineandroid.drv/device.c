@@ -266,7 +266,7 @@ static inline void init_java_thread( JavaVM *java_vm )
     __asm__( "mov %0,%%fs" :: "r" (orig_fs) );
 }
 
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 
 #include <asm/prctl.h>
 #include <asm/unistd.h>

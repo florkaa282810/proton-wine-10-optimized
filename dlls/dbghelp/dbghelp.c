@@ -156,7 +156,7 @@ static struct cpu*      dbghelp_cpus[] = {&cpu_i386, &cpu_x86_64, &cpu_arm, &cpu
 struct cpu*             dbghelp_current_cpu =
 #if defined(__i386__)
     &cpu_i386
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     &cpu_x86_64
 #elif defined(__arm__)
     &cpu_arm

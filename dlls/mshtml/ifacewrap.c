@@ -45,7 +45,7 @@
         "movl 0(%eax), %eax\n\t"                \
         "jmp *" #off "(%eax)\n\t")
 
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
 
 #define DEFINE_WRAPPER_FUNC(n, x, off)          \
     HRESULT WINAPI wrapper_func_##n(IUnknown*); \

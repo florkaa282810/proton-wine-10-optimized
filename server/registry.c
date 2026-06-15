@@ -1855,7 +1855,7 @@ static void init_supported_machines(void)
     unsigned int count = 0;
 #ifdef __i386__
     if (prefix_type == PREFIX_32BIT) supported_machines[count++] = IMAGE_FILE_MACHINE_I386;
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
     if (prefix_type == PREFIX_64BIT) supported_machines[count++] = IMAGE_FILE_MACHINE_AMD64;
     supported_machines[count++] = IMAGE_FILE_MACHINE_I386;
 #elif defined(__arm__)

@@ -111,7 +111,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
         msvcrt_destroy_heap();
         return FALSE;
     }
-#if defined(__x86_64__) && _MSVCR_VER>=140
+#if defined(__x86_64__) && !defined(__arm64ec__) && _MSVCR_VER>=140
     if(!msvcrt_init_handler4()) {
         msvcrt_free_locks();
         msvcrt_free_tls_mem();
@@ -137,7 +137,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
     TRACE("finished process init\n");
     break;
   case DLL_THREAD_ATTACH:
-#if defined(__x86_64__) && _MSVCR_VER>=140
+#if defined(__x86_64__) && !defined(__arm64ec__) && _MSVCR_VER>=140
     msvcrt_attach_handler4();
 #endif
     break;
@@ -152,7 +152,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
     msvcrt_free_tls_mem();
     if (!msvcrt_free_tls())
       return FALSE;
-#if defined(__x86_64__) && _MSVCR_VER>=140
+#if defined(__x86_64__) && !defined(__arm64ec__) && _MSVCR_VER>=140
     msvcrt_free_handler4();
 #endif
     _free_locale(MSVCRT_locale);

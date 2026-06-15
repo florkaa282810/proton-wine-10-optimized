@@ -1895,7 +1895,7 @@ static inline unsigned long get_fpu_cw(void)
     __os_arm64x_get_x64_information( 0, &sse, NULL );
     __os_arm64x_get_x64_information( 2, &cw, NULL );
     return MAKELONG( cw, sse );
-#elif defined(__i386__) || defined(__x86_64__)
+#elif defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
     WORD cw = 0;
     unsigned int sse = 0;
 #ifdef _MSC_VER
@@ -1989,7 +1989,7 @@ static void test_thread_fpu_cw(void)
         { _MCW_EM | _PC_53, MAKELONG( 0x27f, 0x1f80 ) },
         { _MCW_EM | _PC_53, MAKELONG( 0x27f, 0x1f81 ) },
         { _MCW_EM | _PC_53, MAKELONG( 0x27f, 0x1f81 ) }
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) && !defined(__arm64ec__)
         { _MCW_EM | _PC_64, MAKELONG( 0x27f, 0x1f80 ) },
         { _MCW_EM | _PC_64, MAKELONG( 0x27f, 0x1f80 ) },
         { _EM_INEXACT | _RC_CHOP | _PC_64, MAKELONG( 0x27f, 0x7000 ) },

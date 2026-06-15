@@ -164,7 +164,7 @@ void fpu_to_fpux( XMM_SAVE_AREA32 *fpux, const I386_FLOATING_SAVE_AREA *fpu )
 }
 
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__)
 
 /***********************************************************************
  *           validate_context_xstate
@@ -2639,7 +2639,7 @@ ULONG WINAPI NtGetCurrentProcessorNumber(void)
         WARN("Thread is running on processor which is not in the defined override.\n");
     }
     if (res >= 0) return res;
-#elif defined(__APPLE__) && (defined(__x86_64__) || defined(__i386__))
+#elif defined(__APPLE__) && (defined(__x86_64__) && !defined(__arm64ec__) || defined(__i386__))
     struct {
         unsigned long p1, p2;
     } p;

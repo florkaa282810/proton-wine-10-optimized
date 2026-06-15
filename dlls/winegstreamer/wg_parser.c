@@ -641,7 +641,7 @@ static void set_dav1d_n_threads(GstElement *element)
 
     if (name && strstr(name, "Dav1d"))
     {
-#if defined(__x86_64__)
+#if defined(__x86_64__) && !defined(__arm64ec__)
         GST_DEBUG("%s found, setting n-threads to 4.", name);
         g_object_set(element, "n-threads", G_GINT64_CONSTANT(4), NULL);
 #else

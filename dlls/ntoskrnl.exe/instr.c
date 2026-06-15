@@ -476,7 +476,7 @@ LONG CALLBACK vectored_handler( EXCEPTION_POINTERS *ptrs )
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
-#elif defined(__x86_64__)  /* __i386__ */
+#elif defined(__x86_64__) && !defined(__arm64ec__)  /* __i386__ */
 
 WINE_DEFAULT_DEBUG_CHANNEL(int);
 

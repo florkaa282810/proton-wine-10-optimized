@@ -1264,7 +1264,7 @@ static IHTMLDocument2 *create_doc_from_url(const WCHAR *start_url)
     hres = CoCreateInstance(&CLSID_HTMLDocument, NULL,
             CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER, &IID_IHTMLDocument2,
             (void**)&doc);
-#if !defined(__i386__) && !defined(__x86_64__)
+#if !defined(__i386__) && !defined(__x86_64__) && !defined(__arm64ec__)
     todo_wine
 #endif
     ok(hres == S_OK, "CoCreateInstance failed: 0x%08lx\n", hres);
