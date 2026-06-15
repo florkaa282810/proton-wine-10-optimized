@@ -59,7 +59,7 @@ static const WCHAR NtPlatformExtension[] = L".NTx86";
 static const WCHAR NtPlatformExtension[] = L".NTamd64";
 #elif defined(__arm__)
 static const WCHAR NtPlatformExtension[] = L".NTarm";
-#elif defined(__aarch64__)
+#elif defined(__aarch64__) || defined(__arm64ec__)
 static const WCHAR NtPlatformExtension[] = L".NTarm64";
 #endif
 
