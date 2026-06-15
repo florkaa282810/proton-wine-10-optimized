@@ -1485,6 +1485,9 @@ typedef struct _KNONVOLATILE_CONTEXT_POINTERS
 #define XSTATE_MASK_LEGACY                  (XSTATE_MASK_LEGACY_FLOATING_POINT | XSTATE_MASK_LEGACY_SSE)
 #define XSTATE_MASK_GSSE                    (1 << XSTATE_GSSE)
 
+#define XSTATE_ARM64_SVE 2
+#define XSTATE_MASK_ARM64_SVE (1 << XSTATE_ARM64_SVE)
+
 typedef struct _XSTATE_FEATURE
 {
     ULONG Offset;
@@ -1509,11 +1512,18 @@ typedef struct _XSTATE_CONFIGURATION
 
 typedef struct _XSAVE_AREA_HEADER
 {
-    DWORD64 Mask;
-    DWORD64 CompactionMask;
-    DWORD64 Reserved2[6];
+    unsigned __int64 Mask;
+    unsigned __int64 CompactionMask;
+    unsigned __int64 Reserved2[6];
 }
 XSAVE_AREA_HEADER, *PXSAVE_AREA_HEADER;
+
+typedef struct _XSAVE_ARM64_SVE_HEADER {
+    ULONG VectorLength;
+    ULONG VectorRegisterOffset;
+    ULONG PredicateRegisterOffset;
+    ULONG Reserved[5];
+} XSAVE_ARM64_SVE_HEADER, *PXSAVE_ARM64_SVE_HEADER;
 
 typedef struct _YMMCONTEXT
 {
@@ -1695,6 +1705,8 @@ typedef struct _KNONVOLATILE_CONTEXT_POINTERS
 #define CONTEXT_ARM64_FLOATING_POINT  (CONTEXT_ARM64 | 0x00000004)
 #define CONTEXT_ARM64_DEBUG_REGISTERS (CONTEXT_ARM64 | 0x00000008)
 #define CONTEXT_ARM64_X18       (CONTEXT_ARM64 | 0x00000010)
+#define CONTEXT_ARM64_XSTATE    (CONTEXT_ARM64 | 0x00000020)
+#define CONTEXT_ARM64_FEX_YMMSTATE   (CONTEXT_ARM64 | 0x00000040)
 #define CONTEXT_ARM64_FULL (CONTEXT_ARM64_CONTROL | CONTEXT_ARM64_INTEGER | CONTEXT_ARM64_FLOATING_POINT)
 #define CONTEXT_ARM64_ALL  (CONTEXT_ARM64_FULL | CONTEXT_ARM64_DEBUG_REGISTERS | CONTEXT_ARM64_X18)
 
@@ -1974,6 +1986,7 @@ typedef struct DECLSPEC_ALIGN(16) _ARM64EC_NT_CONTEXT
 #define CONTEXT_INTEGER CONTEXT_ARM64_INTEGER
 #define CONTEXT_FLOATING_POINT CONTEXT_ARM64_FLOATING_POINT
 #define CONTEXT_DEBUG_REGISTERS CONTEXT_ARM64_DEBUG_REGISTERS
+#define CONTEXT_XSTATE CONTEXT_ARM64_XSTATE
 #define CONTEXT_FULL CONTEXT_ARM64_FULL
 #define CONTEXT_ALL CONTEXT_ARM64_ALL
 #define CONTEXT_RET_TO_GUEST CONTEXT_ARM64_RET_TO_GUEST
@@ -7120,7 +7133,7 @@ static void __wine_memory_barrier_acq_rel(void)
     _ReadWriteBarrier();
 #elif defined(__arm__)
     __dmb(_ARM_BARRIER_ISH);
-#elif defined(__aarch64__)
+#elif defined(__aarch64__) || defined(__arm64ec__)
     __dmb(_ARM64_BARRIER_ISH);
 #endif  /* defined(__i386__) || defined(__x86_64__) && !defined(__arm64ec__) */
 }
