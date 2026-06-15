@@ -155,5 +155,7 @@ do
     cp -r $install_dir/bin/notepad $OUTPUT_DIR/bin || true
     cp -r $install_dir/lib/wine  $OUTPUT_DIR/lib || true
     cp -r $install_dir/share/wine  $OUTPUT_DIR/share || true
+    # Include libsysvshm.so for Winlator manual use
+    cp $HOME/termuxfs/aarch64/usr/lib/libsysvshm.so $OUTPUT_DIR/lib/ || cp $HOME/termuxfs/aarch64/data/data/com.termux/files/usr/lib/libsysvshm.so $OUTPUT_DIR/lib/ || true
   fi
 done

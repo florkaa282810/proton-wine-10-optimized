@@ -221,6 +221,10 @@ jobs:
           cp $GITHUB_WORKSPACE/profile-wine.json profile.json
           tar cJf proton-wine-10.0-4-$ARCH_NAME.wcp.xz bin lib share prefixPack.txz profile.json
           mv proton-wine-10.0-4-$ARCH_NAME.wcp.xz $GITHUB_WORKSPACE/
+          
+          # Create simple tar.gz for manual Winlator use
+          tar czf proton-10.0-4-$ARCH_NAME-manual.tar.gz bin lib share
+          mv proton-10.0-4-$ARCH_NAME-manual.tar.gz $GITHUB_WORKSPACE/
       
       - name: Upload build artifacts
         run: |
@@ -244,6 +248,13 @@ jobs:
           name: proton-wine-${{ env.ARCH_NAME }}
           path: proton-wine-10.0-4-${{ env.ARCH_NAME }}.wcp.xz
           retention-days: 30
+          
+      - name: Upload Manual build artifacts for ${{ matrix.arch }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: proton-manual-${{ env.ARCH_NAME }}
+          path: proton-10.0-4-${{ env.ARCH_NAME }}-manual.tar.gz
+          retention-days: 30
   
   release:
     needs: build
@@ -261,6 +272,7 @@ jobs:
           mkdir -p release
           find artifacts -name "*.wcp" -exec cp {} release/ \;
           find artifacts -name "*.wcp.xz" -exec cp {} release/ \;
+          find artifacts -name "*-manual.tar.gz" -exec cp {} release/ \;
           ls -lah release/
       
       - name: Generate date-based tag
