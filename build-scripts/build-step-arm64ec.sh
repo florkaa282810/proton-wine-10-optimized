@@ -52,7 +52,7 @@ do
       --disable-tests \
       --with-vulkan \
       --with-sdl \
-      --with-gstreamer \
+      --without-gstreamer \
       --without-oss \
       --disable-tests \
       --enable-archs=$arch \
