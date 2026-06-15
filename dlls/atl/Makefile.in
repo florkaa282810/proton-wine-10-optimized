@@ -2,6 +2,7 @@ MODULE    = atl.dll
 IMPORTLIB = atl
 IMPORTS   = uuid oleaut32 ole32 user32 gdi32 advapi32 shlwapi
 EXTRADEFS = -D_ATL_VER=_ATL_VER_30
+atl_lib_IDL_FLAGS = -L../stdole2.tlb
 
 SOURCES = \
 	atl.c \
