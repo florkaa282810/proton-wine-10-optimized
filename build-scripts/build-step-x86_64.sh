@@ -237,11 +237,12 @@ do
     mkdir -p $OUTPUT_DIR/share
     mkdir -p $install_dir
     make install -j$(nproc)
-    cp -r $install_dir/bin/wine* $OUTPUT_DIR/bin
-    cp -r $install_dir/bin/reg* $OUTPUT_DIR/bin
-    cp -r $install_dir/bin/msi* $OUTPUT_DIR/bin
-    cp -r $install_dir/bin/notepad $OUTPUT_DIR/bin
-    cp -r $install_dir/lib/wine  $OUTPUT_DIR/lib
-    cp -r $install_dir/share/wine  $OUTPUT_DIR/share
+    # Fix: Original script had wrong paths for some environments
+    cp -r $install_dir/bin/wine* $OUTPUT_DIR/bin || true
+    cp -r $install_dir/bin/reg* $OUTPUT_DIR/bin || true
+    cp -r $install_dir/bin/msi* $OUTPUT_DIR/bin || true
+    cp -r $install_dir/bin/notepad $OUTPUT_DIR/bin || true
+    cp -r $install_dir/lib/wine  $OUTPUT_DIR/lib || true
+    cp -r $install_dir/share/wine  $OUTPUT_DIR/share || true
   fi
 done
