@@ -23,8 +23,10 @@ export DEPS_DIR="$HOME/termuxfs/aarch64/usr"
 export PKG_CONFIG_LIBDIR="$DEPS_DIR/lib/pkgconfig:$DEPS_DIR/share/pkgconfig"
 export ACLOCAL_PATH="$DEPS_DIR/lib/aclocal:$DEPS_DIR/share/aclocal"
 export CFLAGS="-O3 -march=armv8-a+crypto+fp16 -fomit-frame-pointer --sysroot=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-export CPPFLAGS="-I$DEPS_DIR/include -I$DEPS_DIR/include/gstreamer-1.0 -I$DEPS_DIR/include/glib-2.0 -I$DEPS_DIR/lib/glib-2.0/include"
-export LDFLAGS="-L$DEPS_DIR/lib -Wl,-rpath-link,$DEPS_DIR/lib -lsysvshm"
+    export CPPFLAGS="-I$DEPS_DIR/include -I$DEPS_DIR/include/SDL2 -I$DEPS_DIR/include/gstreamer-1.0 -I$DEPS_DIR/include/glib-2.0 -I$DEPS_DIR/lib/glib-2.0/include"
+    export LDFLAGS="-L$DEPS_DIR/lib -L$DEPS_DIR/lib/pulseaudio -Wl,-rpath-link,$DEPS_DIR/lib -lsysvshm -lSDL2"
+    export SDL2_CFLAGS="-I$DEPS_DIR/include/SDL2"
+    export SDL2_LIBS="-L$DEPS_DIR/lib -lSDL2"
 
 for arg in "$@"
 do
