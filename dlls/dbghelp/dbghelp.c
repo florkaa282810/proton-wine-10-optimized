@@ -160,7 +160,7 @@ struct cpu*             dbghelp_current_cpu =
     &cpu_x86_64
 #elif defined(__arm__)
     &cpu_arm
-#elif defined(__aarch64__)
+#elif defined(__aarch64__) || defined(__arm64ec__)
     &cpu_arm64
 #else
 #error define support for your CPU
