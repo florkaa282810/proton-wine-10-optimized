@@ -88,6 +88,10 @@ do
       "common/dlls_winex11_drv_x11drv_main_c.patch"
 
       # address space patches
+      "test-bylaws/include_winternl_h.patch"
+      "test-bylaws/include_winnt_h.patch"
+      "test-bylaws/dlls_ntdll_ntdll_misc_h.patch"
+      "test-bylaws/dlls_ntdll_unwind_h.patch"
       "arm64ec/dlls_ntdll_unix_virtual_c.patch"
       "common/loader_preloader_c.patch"
 
