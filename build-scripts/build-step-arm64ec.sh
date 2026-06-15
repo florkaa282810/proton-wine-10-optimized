@@ -7,7 +7,8 @@ install_dir="$HOME/wine-install-aarch64"
 OUTPUT_DIR="$HOME/compiled-files-aarch64"
 
 # Use absolute path for NDK compiler to ensure configure can find it
-NDK_BIN="$HOME/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/bin"
+NDK_ROOT="$HOME/Android/Sdk/ndk/27.3.13750724"
+NDK_BIN="$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin"
 CC="$NDK_BIN/aarch64-linux-android28-clang"
 CXX="$NDK_BIN/aarch64-linux-android28-clang++"
 
@@ -15,8 +16,15 @@ export CROSSCC="aarch64-w64-mingw32-gcc"
 export CROSSCXX="aarch64-w64-mingw32-g++"
 export WINE_TOOLS="$GITHUB_WORKSPACE/wine-tools"
 
-export PATH="$HOME/toolchains/llvm-mingw-20250920-ucrt-ubuntu-22.04-x86_64/bin:$PATH"
-export PATH="$HOME/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
+export PATH="$NDK_BIN:$HOME/toolchains/llvm-mingw-20250920-ucrt-ubuntu-22.04-x86_64/bin:$PATH"
+
+# Android/Termux environment paths
+export DEPS_DIR="$HOME/termuxfs/aarch64/usr"
+export PKG_CONFIG_LIBDIR="$DEPS_DIR/lib/pkgconfig:$DEPS_DIR/share/pkgconfig"
+export ACLOCAL_PATH="$DEPS_DIR/lib/aclocal:$DEPS_DIR/share/aclocal"
+export CFLAGS="-O3 -march=armv8-a+crypto+fp16 -fomit-frame-pointer --sysroot=$NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+export CPPFLAGS="-I$DEPS_DIR/include -I$DEPS_DIR/include/gstreamer-1.0 -I$DEPS_DIR/include/glib-2.0 -I$DEPS_DIR/lib/glib-2.0/include"
+export LDFLAGS="-L$DEPS_DIR/lib -Wl,-rpath-link,$DEPS_DIR/lib -lsysvshm"
 
 for arg in "$@"
 do
@@ -33,10 +41,6 @@ do
   if [ "$arg" == "--configure" ]
   then
     echo "Configuring..."
-    # Set sysroot for NDK compiler
-    export CFLAGS="-O3 -march=armv8-a+crypto+fp16 -fomit-frame-pointer --sysroot=$HOME/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-    export CPPFLAGS="-I$HOME/termuxfs/aarch64/usr/include $CFLAGS"
-    export LDFLAGS="-L$HOME/termuxfs/aarch64/usr/lib -Wl,-rpath-link,$HOME/termuxfs/aarch64/usr/lib -lsysvshm"
 
     ./configure \
       --host=$arch_host \
