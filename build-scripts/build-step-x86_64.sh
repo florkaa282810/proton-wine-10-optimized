@@ -222,6 +222,9 @@ do
   if [ "$arg" == "--build" ]
   then
     echo "Building..."
+    # Fix for widl cannot find stdole2.tlb
+    mkdir -p dlls/atl
+    ln -sf ../stdole2.tlb/stdole2.tlb dlls/atl/stdole2.tlb || true
     rm -rf $OUTPUT_DIR/bin
     rm -rf $OUTPUT_DIR/lib
     rm -rf $OUTPUT_DIR/share
