@@ -145,18 +145,9 @@ static BOOL flush_instruction_cache( HANDLE process, LPCVOID addr, SIZE_T size )
 
 #ifdef __arm64ec__
 /* Wrapper that preserves RDX/X0 */
-BOOL WINAPI __attribute__((naked)) FlushInstructionCache( HANDLE process, LPCVOID addr, SIZE_T size )
+BOOL WINAPI FlushInstructionCache( HANDLE process, LPCVOID addr, SIZE_T size )
 {
-    asm( ".seh_proc \"#FlushInstructionCache\"\n\t"
-         "stp x29, x30, [sp, #-32]!\n\t"
-         ".seh_save_fplr_x 32\n\t"
-         "str x1, [sp, #16]\n\t"
-         ".seh_endprologue\n\t"
-         "bl \"#flush_instruction_cache\"\n\t"
-         "ldr x1, [sp, #16]\n\t"
-         "ldp x29, x30, [sp], #32\n\t"
-         "ret\n\t"
-         ".seh_endproc" );
+    return flush_instruction_cache( process, addr, size );
 }
 #else
 BOOL WINAPI DECLSPEC_HOTPATCH FlushInstructionCache( HANDLE process, LPCVOID addr, SIZE_T size )
