@@ -161,7 +161,7 @@ extern void heap_thread_detach(void);
     TRACE( "r0=%08lx r1=%08lx r2=%08lx r3=%08lx r4=%08lx r5=%08lx\n", (c)->R0, (c)->R1, (c)->R2, (c)->R3, (c)->R4, (c)->R5 ); \
     TRACE( "r6=%08lx r7=%08lx r8=%08lx r9=%08lx r10=%08lx r11=%08lx\n", (c)->R6, (c)->R7, (c)->R8, (c)->R9, (c)->R10, (c)->R11 ); \
     } while(0)
-#elif defined(__aarch64__) || defined(__arm64ec__)
+#elif defined(__aarch64__)
 # define TRACE_CONTEXT(c) do { \
     TRACE( " pc=%016I64x  sp=%016I64x  lr=%016I64x  fp=%016I64x\n", (c)->Pc, (c)->Sp, (c)->Lr, (c)->Fp ); \
     TRACE( " x0=%016I64x  x1=%016I64x  x2=%016I64x  x3=%016I64x\n", (c)->X0, (c)->X1, (c)->X2, (c)->X3 ); \
@@ -172,6 +172,14 @@ extern void heap_thread_detach(void);
     TRACE( "x20=%016I64x x21=%016I64x x22=%016I64x x23=%016I64x\n", (c)->X20, (c)->X21, (c)->X22, (c)->X23 ); \
     TRACE( "x24=%016I64x x25=%016I64x x26=%016I64x x27=%016I64x\n", (c)->X24, (c)->X25, (c)->X26, (c)->X27 ); \
     TRACE( "x28=%016I64x cpsr=%08lx fpcr=%08lx fpsr=%08lx\n", (c)->X28, (c)->Cpsr, (c)->Fpcr, (c)->Fpsr ); \
+    } while(0)
+#elif defined(__arm64ec__)
+# define TRACE_CONTEXT(c) do { \
+    TRACE( "rip=%016I64x rsp=%016I64x rbp=%016I64x eflags=%08lx\n", (c)->Rip, (c)->Rsp, (c)->Rbp, (c)->EFlags ); \
+    TRACE( "rax=%016I64x rbx=%016I64x rcx=%016I64x rdx=%016I64x\n", (c)->Rax, (c)->Rbx, (c)->Rcx, (c)->Rdx ); \
+    TRACE( "rsi=%016I64x rdi=%016I64x  r8=%016I64x  r9=%016I64x\n", (c)->Rsi, (c)->Rdi, (c)->R8, (c)->R9 ); \
+    TRACE( "r10=%016I64x r11=%016I64x r12=%016I64x r13=%016I64x\n", (c)->R10, (c)->R11, (c)->R12, (c)->R13 ); \
+    TRACE( "r14=%016I64x r15=%016I64x mxcsr=%08lx\n", (c)->R14, (c)->R15, (c)->MxCsr ); \
     } while(0)
 #endif
 
