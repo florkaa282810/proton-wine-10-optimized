@@ -2,11 +2,14 @@
 set -e
 
 arch="arm64ec"
-arch_host="aarch64-linux-gnu"
+arch_host="aarch64-linux-android28"
 install_dir="$HOME/wine-install-aarch64"
 OUTPUT_DIR="$HOME/compiled-files-aarch64"
-CC="aarch64-linux-gnu-clang"
-CXX="aarch64-linux-gnu-clang++"
+
+# Use absolute path for NDK compiler to ensure configure can find it
+NDK_BIN="$HOME/Android/Sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/bin"
+CC="$NDK_BIN/aarch64-linux-android28-clang"
+CXX="$NDK_BIN/aarch64-linux-android28-clang++"
 
 export CROSSCC="aarch64-w64-mingw32-gcc"
 export CROSSCXX="aarch64-w64-mingw32-g++"
