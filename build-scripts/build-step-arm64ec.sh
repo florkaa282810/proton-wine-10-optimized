@@ -52,11 +52,14 @@ do
       --without-x \
       --without-freetype \
       --disable-tests \
-      --with-vulkan \
+      --without-vulkan \
       --with-sdl \
       --without-gstreamer \
       --without-oss \
       --disable-tests \
+      --without-pulse \
+      --without-alsa \
+      --without-udev \
       --enable-archs=$arch \
       CROSSCC="$CROSSCC" \
       CROSSCXX="$CROSSCXX" \
