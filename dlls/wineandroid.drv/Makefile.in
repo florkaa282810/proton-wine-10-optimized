@@ -13,4 +13,4 @@ SOURCES = \
 	window.c \
 	wine.svg
 
-EXTRA_TARGETS = wine-debug.apk
+# EXTRA_TARGETS = wine-debug.apk
