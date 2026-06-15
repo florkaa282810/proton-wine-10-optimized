@@ -5,8 +5,8 @@ arch="arm64ec"
 arch_host="aarch64-linux-gnu"
 install_dir="$HOME/wine-install-aarch64"
 OUTPUT_DIR="$HOME/compiled-files-aarch64"
-CC="aarch64-linux-gnu-gcc"
-CXX="aarch64-linux-gnu-g++"
+CC="aarch64-linux-gnu-clang"
+CXX="aarch64-linux-gnu-clang++"
 
 export CROSSCC="aarch64-w64-mingw32-gcc"
 export CROSSCXX="aarch64-w64-mingw32-g++"
@@ -21,7 +21,8 @@ do
   then
     echo "Building sysvshm..."
     cd $HOME/termuxfs/aarch64/
-    $CC -fPIC -shared $GITHUB_WORKSPACE/android/sysvshm/sysvshm.c -o $HOME/termuxfs/aarch64/usr/lib/libsysvshm.so
+    # Use clang from NDK for sysvshm
+    aarch64-linux-gnu-clang -fPIC -shared $GITHUB_WORKSPACE/android/android_sysvshm/android_sysvshm.c -o $HOME/termuxfs/aarch64/usr/lib/libsysvshm.so
     cd $GITHUB_WORKSPACE
   fi
 
