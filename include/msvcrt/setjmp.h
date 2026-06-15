@@ -45,7 +45,7 @@ typedef struct __JUMP_BUFFER
 #define _JBLEN 16
 #define _JBTYPE int
 
-#elif defined(__x86_64__) && !defined(__arm64ec__)
+#elif defined(__x86_64__) || defined(__arm64ec__)
 
 typedef DECLSPEC_ALIGN(16) struct _SETJMP_FLOAT128
 {
